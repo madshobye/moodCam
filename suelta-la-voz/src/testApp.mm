@@ -34,7 +34,7 @@ void testApp::setup(){
     //OSStatus result = AudioSessionInitialize(NULL, NULL, interruptionListenerCallback, ofxiPhoneGetAppDelegate());  
     //both OSStatus result... seem to work equally well. The second
     //needs interruptionListenerCallback above uncommented
-    UInt32 category = kAudioSessionCategory_MediaPlayback;  
+    UInt32 category = kAudioSessionCategory_PlayAndRecord; //used to be kAudioSessionCategory_MediaPlayback; but the output disables input
     result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);  
     AudioSessionSetActive(YES);
 
