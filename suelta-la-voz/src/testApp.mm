@@ -35,9 +35,27 @@ void testApp::setup(){
     //both OSStatus result... seem to work equally well. The second
     //needs interruptionListenerCallback above uncommented
     UInt32 category = kAudioSessionCategory_PlayAndRecord; //used to be kAudioSessionCategory_MediaPlayback; but the output disables input
+    //and it works great with headphones, but without headphones, the earpiece instead of speaker is used for output.
+    //does it work with headphones without mic? yes
     result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);  
+
+    
+    /*following code makes speaker sound out, even if headphones are connected which is not what I want
+    UInt32 audioRouteOverride = 'spkr';   
+    AudioSessionSetProperty (         
+                             'ovrd',  
+                             sizeof (audioRouteOverride),  
+                             &audioRouteOverride           
+                             );  
+     */
+
+    
+
+    
     AudioSessionSetActive(YES);
 
+    
+    
     chune.loadSound("sounds/suelta-la-voz.caf");
 	chune.setVolume(1.0f);
 	chune.setMultiPlay(false);
