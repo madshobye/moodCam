@@ -2,10 +2,6 @@
 #include "testApp.h"
 
 
-//this might be useful to keep music playing in locked mode
-//void interruptionListenerCallback(void *inClientData, UInt32 inInterruptionState) {  
-//    NSLog(@"interruptionListenerCallback");  
-//}
 
 
 int threadedUpload::count=0;
@@ -28,6 +24,11 @@ void testApp::setup(){
     instaicon.loadImage("images/instamatic3.png");
     
         
+    
+    //this might be useful to keep music playing in locked mode
+    //void interruptionListenerCallback(void *inClientData, UInt32 inInterruptionState) {  
+    //    NSLog(@"interruptionListenerCallback");  
+    //}
     //this is to keep music playing in locked mode
     //and woyoyoy! it works!
     OSStatus result = AudioSessionInitialize(NULL, NULL, NULL, NULL);
@@ -204,9 +205,8 @@ void testApp::update()
         //to start with, for the filters to work with, we have the image ofcvColorImg of type ofxCvColorImage
         //and when we are ready we should have the filtered image back in ofcvColorImg (drawn) but
         //we also need the filtered image in cvRGB (uploaded)
-
-        //this should actually be in filters.cpp
-        //so put a select or case or if to select appropriate filter
+        
+Byt namn på bilderna så att de heter nåt med save och draw och filter
         
         
         //filtertype=5;
