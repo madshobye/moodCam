@@ -206,15 +206,15 @@ public:
 	
     void drawCassette(int cx,int cy,float scale,float progress,int wi);
     
-    void spoke(float x,float y, float rout, float rin,float alpha);
+    void spoke(float x,float y, float rout, float rin,float alpha); //not used
 
     
 	//variables
     unsigned char * cameraPixelsNoAlpha;
 	ofxiPhoneImagePicker * camera;
-	ofxCvColorImage  ofcvColorImg;
+	ofxCvColorImage  drawImage; //this is the image that is drawn in the draw-function
 
-    IplImage *cvRGB;
+    IplImage *uploadImage; //this is the image that is uploaded in the threaded upload. 
     IplImage *cvImageTemp;
 
     bool phototaken;
