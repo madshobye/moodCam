@@ -206,7 +206,8 @@ void testApp::update()
         //and when we are ready we should have the filtered image back in ofcvColorImg (drawn) but
         //we also need the filtered image in cvRGB (uploaded)
         
-Byt namn på bilderna så att de heter nåt med save och draw och filter
+//Byt namn på bilderna så att de heter nåt med save och draw och filter
+//        testa också hur filtreringstiden påverkas av bakgrundsuppladdning
         
         
         //filtertype=5;
