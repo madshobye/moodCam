@@ -37,7 +37,7 @@ public:
         if(lock()) {  
             NSLog(@"Starting upload thread, step 2");
             while (count>=maxSimultaneousUploads){
-                cout << endl << "waiting" << endl;
+                //cout << endl << "waiting" << endl;
                 ofSleepMillis(2000);        
             }
             count++;
@@ -177,8 +177,6 @@ public:
 	void setup();
 	void update();
 	void draw();
-
-    void olddraw();
 	
     void exit();
 	
@@ -206,7 +204,6 @@ public:
 	
     void drawCassette(int cx,int cy,float scale,float progress,int wi);
     
-    void spoke(float x,float y, float rout, float rin,float alpha); //not used
 
     
 	//variables
@@ -220,7 +217,7 @@ public:
     bool phototaken;
 	bool photodrawn;
 
-	int uploadcountdown; 
+	int filtercountdown; //to allow a few update-draw-cycles before filtering starts
     
     bool manualUpdated;
 	

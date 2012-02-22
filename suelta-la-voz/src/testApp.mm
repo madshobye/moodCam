@@ -9,7 +9,10 @@ int threadedUpload::count=0;
 
 //--------------------------------------------------------------
 void testApp::setup(){	
-    ofBackground(0,0,0); 
+    ofBackground(0,0,0);
+    filtercountdown=0;
+    
+    
     //cassette animation
     wheel[0].loadImage("images/hjul0.png");
     wheel[1].loadImage("images/hjul10.png");
@@ -81,7 +84,7 @@ void testApp::setup(){
 	showDebug = false;
 	phototaken=false;
 	photodrawn=false;
-	uploadcountdown=0;
+
 
 	
     // register touch events
@@ -150,208 +153,195 @@ void testApp::setup(){
 void testApp::update()
 {
     if(camera->imageUpdated){
-		imagetime=ofGetElapsedTimeMillis();
-		int orientationA=iPhoneGetOrientation();
-		//OFXIPHONE_ORIENTATION_PORTRAIT			UIDeviceOrientationPortrait
-		//OFXIPHONE_ORIENTATION_UPSIDEDOWN		UIDeviceOrientationPortraitUpsideDown
-		//OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT	UIDeviceOrientationLandscapeRight
-		//OFXIPHONE_ORIENTATION_LANDSCAPE_LEFT	UIDeviceOrientationLandscapeLeft
-		//not working
-   	
-		//second try, not working either... always returning "up"
-		int orientationB=camera->getOrientation();
-        
-		
-        int orientationC=[UIDevice currentDevice].orientation;
-        //cout << "orientation, try 3: " << orientation << endl;
-		//ok, this works, but might return value when "use" is clicked, not when photo taken. can be used as qualified guess, 
-        //but largest value of width and height must also be used to determine orientation of photo
-
-        
-        cout << "orientation A: " << orientationA << ", orientation B: " << orientationB << ", orientation C " << orientationC << endl;
-        
-        
-        
-        
-        
-        
-		if (cameraPixelsNoAlpha == NULL){
-			// first time, let's get memory based on how big the image is: 
-			//cameraPixelsFlip = new unsigned char [camera->width * camera->height*4];
-			//cameraPixelsRot = new unsigned char [camera->width * camera->height*4];
-			//cameraPixels = new unsigned char [camera->width * camera->height*4];
-            cameraPixelsNoAlpha = new unsigned char [camera->width * camera->height*3];
-		}
-                
-        int width=camera->width;
-        int height=camera->height;
-        
-        cout << "width: " << width << endl;
-        cout << "height: " << height << endl;
-        cout << "window width: " << ofGetWidth() << endl;
-        cout << "window height: " << ofGetHeight() << endl;
-        drawImage.clear();
-        drawImage.allocate(width, height);
-        
-        unsigned long now=dis(0,"");        
-        //delete alphachannel
-        for (int i=0,j=0;i<width*height*4;i+=4){
-            memcpy(cameraPixelsNoAlpha+j,camera->pixels+i,3);
-            j+=3;
-        }
-        dis(now,"removal of alphachannel");
-        
-		//time for filtering
-        //to start with, for the filters to work with, we have the image drawImage of type ofxCvColorImage
-        //and when we are ready we should have the filtered image back in drawImage (drawn) but
-        //we also need the filtered image in uploadImage (uploaded)
-        
-
-      
-        //filtertype=5;
-        if (filtertype==0) {
-            //no filter
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-        } else if (filtertype==1) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            //uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3); maybe this isn't needed???
-            now=dis(0,"");
-            uploadImage=drawImage.getCvImage();
-            now=dis(now,"filter step 1");
-            filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
-            now=dis(now,"filter step 2");
-            //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
-        } else if (filtertype==2) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            now=dis(0,"");
-            uploadImage=drawImage.getCvImage();
-            now=dis(now,"filter step 1");
-            filterCurves_hsv(uploadImage, drawImage.getWidth(), drawImage.getHeight(),0.5); //amount should be affected by senses
-            now=dis(now,"filter step 2");
-            //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
-        } else if (filtertype==3) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            now=dis(0,"");
-            uploadImage=drawImage.getCvImage();
-            now=dis(now,"filter step 1");
-            filterVignette_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),-1);
-            now=dis(now,"filter step 2");
-            //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
-
-        } else if (filtertype==4) {
-            //this often crashes
-            for(int i =0; i < 10;i++)
-            {
-                cout << "ant iteration " << i << endl;
-                ant(cameraPixelsNoAlpha,ofRandom(0,drawImage.getWidth()), ofRandom(0,drawImage.getHeight()),ofRandom(0,2*PI),drawImage.getWidth(), drawImage.getHeight(), 8,0.5);
-            }     
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-        } else if (filtertype==5) {
-/*            uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-            filterFrameit(drawImage.getPixels() , drawImage.getWidth(), drawImage.getHeight(),-1);
-            uploadImage=drawImage.getCvImage(); //very very strange. if portrait mode, original and not filtered image copied to uploadImage
-            //but correct filtered image drawn by drawImage.draw. weird. maybe because of documented bug in getPixels ofxCVimage.cpp
-            //try getCvROIImage...
-  */          
-            //new try
-            filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            //yes, this was the way to do it. 
-            //but must find a way to do it if appying two filters, one with pixels, one with iplimage...
-            //no problem if working with pixels before iplimage, but maybe problem if working with
-            //pixels after iplimage.  how to get pixels from iplimage???
-    
-        } else if (filtertype==6) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            
-        } else if (filtertype==7) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            
-        } else if (filtertype==8) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            
-        } else if (filtertype==9) {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            
-        } else {
-            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-            uploadImage=drawImage.getCvImage();
-            
-        }
-
-        
-        /*
+        if (filtercountdown>0) {
+            //this is to prevent the preview screen from sticking until filtered image is drawn
+            //which sometimes happens if you don't do a few update and draw after camera->imageUpdate
+            filtercountdown--;
+        } else 
         {
-            now=dis(0,"");
-            //convert ofxcvcolorImage to opencv-image (IplImage)
-            uploadImage = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-            now=dis(now,"fast: time to filter step 1");
-            cvImageTemp = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-            now=dis(now,"fast: time to filter step 2");
-            uploadImage=drawImage.getCvImage();
-            now=dis(now,"ultrafast: time to filter step 3");
-            int value=0; 
-            value=(value/2)*2+1; //value must be odd, this line makes sure it is odd
-            cout << "value " << value << endl;
-            cvSmooth(uploadImage, cvImageTemp, CV_BLUR , value);
-            now=dis(now,"slow: time to filter step 4");
-            uploadImage=cvImageTemp;
-            now=dis(now,"ultrafast: time to filter step 5");
-            drawImage=uploadImage; //works, and seems to be safe
-            now=dis(now,"medium: time to filter step 6");
-		}
-         */
+            imagetime=ofGetElapsedTimeMillis();
+            int orientationA=iPhoneGetOrientation();
+            //OFXIPHONE_ORIENTATION_PORTRAIT			UIDeviceOrientationPortrait
+            //OFXIPHONE_ORIENTATION_UPSIDEDOWN		UIDeviceOrientationPortraitUpsideDown
+            //OFXIPHONE_ORIENTATION_LANDSCAPE_RIGHT	UIDeviceOrientationLandscapeRight
+            //OFXIPHONE_ORIENTATION_LANDSCAPE_LEFT	UIDeviceOrientationLandscapeLeft
+            //not working
         
-        
-        
-        
-        camera->imageUpdated=false;
-		phototaken=true;
-		photodrawn=false;
-		
-        //upload filtered photo
-        int i=0;
-        bool success=false;
-        while(!success && i<numberOfUploadThreads){
-            if (!tup[i].isThreadRunning()){
-                tup[i].upload(uploadImage);
-                success=true;
+            //second try, not working either... always returning "up"
+            int orientationB=camera->getOrientation();
+            
+            
+            int orientationC=[UIDevice currentDevice].orientation;
+            //cout << "orientation, try 3: " << orientation << endl;
+            //ok, this works, but might return value when "use" is clicked, not when photo taken. can be used as qualified guess, 
+            //but largest value of width and height must also be used to determine orientation of photo
+
+            
+            //cout << "orientation A: " << orientationA << ", orientation B: " << orientationB << ", orientation C " << orientationC << endl;
+            
+            
+            
+            
+            
+            
+            if (cameraPixelsNoAlpha == NULL){
+                // first time, let's get memory based on how big the image is: 
+                //cameraPixelsFlip = new unsigned char [camera->width * camera->height*4];
+                //cameraPixelsRot = new unsigned char [camera->width * camera->height*4];
+                //cameraPixels = new unsigned char [camera->width * camera->height*4];
+                cameraPixelsNoAlpha = new unsigned char [camera->width * camera->height*3];
             }
-            i++;
-        }
-        if (!success){
-            NSLog(@"%@",@"couldn't upload, all threads running");
+                    
+            int width=camera->width;
+            int height=camera->height;
+            
+            cout << "width: " << width << endl;
+            cout << "height: " << height << endl;
+            cout << "window width: " << ofGetWidth() << endl;
+            cout << "window height: " << ofGetHeight() << endl;
+            drawImage.clear();
+            drawImage.allocate(width, height);
+            
+            unsigned long now=dis(0,"");        
+            //delete alphachannel
+            for (int i=0,j=0;i<width*height*4;i+=4){
+                memcpy(cameraPixelsNoAlpha+j,camera->pixels+i,3);
+                j+=3;
+            }
+            dis(now,"removal of alphachannel");
+            
+            //time for filtering
+            //to start with, for the filters to work with, we have the image drawImage of type ofxCvColorImage
+            //and when we are ready we should have the filtered image back in drawImage (drawn) but
+            //we also need the filtered image in uploadImage (uploaded)
+            
+            filtertype=1;
+            if (filtertype==0) {
+                //no filter
+                now=dis(0,"");
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                now=dis(now,"from cameraPixels to drawImage");
+                uploadImage=drawImage.getCvImage();
+                dis(now,"from drawImage to uploadImage");
+            } else if (filtertype==1) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                //uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3); maybe this isn't needed???
+                now=dis(0,"");
+                uploadImage=drawImage.getCvImage();
+                now=dis(now,"from drawImage to uploadImage");
+                filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                now=dis(now,"filterCurves_2");
+                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
+            } else if (filtertype==2) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                now=dis(0,"");
+                uploadImage=drawImage.getCvImage();
+                now=dis(now,"filter step 1");
+                filterCurves_hsv(uploadImage, drawImage.getWidth(), drawImage.getHeight(),0.5); //amount should be affected by senses
+                now=dis(now,"filter step 2");
+                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
+            } else if (filtertype==3) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                now=dis(0,"");
+                uploadImage=drawImage.getCvImage();
+                now=dis(now,"filter step 1");
+                filterVignette_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),-1);
+                now=dis(now,"filter step 2");
+                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
+
+            } else if (filtertype==4) {
+                //this often crashes
+                for(int i =0; i < 10;i++)
+                {
+                    cout << "ant iteration " << i << endl;
+                    ant(cameraPixelsNoAlpha,ofRandom(0,drawImage.getWidth()), ofRandom(0,drawImage.getHeight()),ofRandom(0,2*PI),drawImage.getWidth(), drawImage.getHeight(), 8,0.5);
+                }     
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+            } else if (filtertype==5) {
+    /*            uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
+                filterFrameit(drawImage.getPixels() , drawImage.getWidth(), drawImage.getHeight(),-1);
+                uploadImage=drawImage.getCvImage(); //very very strange. if portrait mode, original and not filtered image copied to uploadImage
+                //but correct filtered image drawn by drawImage.draw. weird. maybe because of documented bug in getPixels ofxCVimage.cpp
+                //try getCvROIImage...
+      */          
+                //new try
+                filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                //yes, this was the way to do it. 
+                //but must find a way to do it if appying two filters, one with pixels, one with iplimage...
+                //no problem if working with pixels before iplimage, but maybe problem if working with
+                //pixels after iplimage.  how to get pixels from iplimage???
+        
+            } else if (filtertype==6) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                
+            } else if (filtertype==7) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                
+            } else if (filtertype==8) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                
+            } else if (filtertype==9) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                
+            } else {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                
+            }
+
+            
+            /*
+            {
+                now=dis(0,"");
+                //convert ofxcvcolorImage to opencv-image (IplImage)
+                uploadImage = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
+                now=dis(now,"fast: time to filter step 1");
+                cvImageTemp = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
+                now=dis(now,"fast: time to filter step 2");
+                uploadImage=drawImage.getCvImage();
+                now=dis(now,"ultrafast: time to filter step 3");
+                int value=0; 
+                value=(value/2)*2+1; //value must be odd, this line makes sure it is odd
+                cout << "value " << value << endl;
+                cvSmooth(uploadImage, cvImageTemp, CV_BLUR , value);
+                now=dis(now,"slow: time to filter step 4");
+                uploadImage=cvImageTemp;
+                now=dis(now,"ultrafast: time to filter step 5");
+                drawImage=uploadImage; //works, and seems to be safe
+                now=dis(now,"medium: time to filter step 6");
+            }
+             */
+            
+            
+            
+            
+            camera->imageUpdated=false;
+            phototaken=true;
+            photodrawn=false;
+            
+            //upload filtered photo
+ /*           int i=0;
+            bool success=false;
+            while(!success && i<numberOfUploadThreads){
+                if (!tup[i].isThreadRunning()){
+                    tup[i].upload(uploadImage);
+                    success=true;
+                }
+                i++;
+            }
+            if (!success){
+                NSLog(@"%@",@"couldn't upload, all threads running");
+            }*/
         }
 	}
-
-    
-    //upload status
-    /*
-    bool uploadthreadrunning=false;
-    for (int i=0;i<numberOfUploadThreads;i++){
-        if (tup[i].isThreadRunning()) {
-            uploadthreadrunning=true;
-        }
-    }
-    if (uploadthreadrunning) {
-        for (int i=0;i<numberOfUploadThreads;i++){
-            if (tup[i].isThreadRunning()) {
-                cout << "r"; 
-            }
-            else {
-                cout << "n";
-            }    
-        }
-        cout << threadedUpload::count << " ";
-    }
-    */
+    //if (camera->imageUpdated) ends here
     
 	//shake monitor
 	oldacc=acc;
@@ -400,11 +390,10 @@ void testApp::update()
 	
 }
 
-void testApp::draw()
-{
-    //too many scale calculations done in draw. Should be done once in setup
+void testApp::draw() {
+//too many scale calculations done in draw. Should be done once in setup
     if (!phototaken) {
-        ofSetColor(255,100,0);//red for debugging purposes
+        ofSetColor(255,100,0);//orange for debugging purposes
         ofRect(0, 0, ofGetWidth(), ofGetHeight());
 	}
 	else {
@@ -494,100 +483,8 @@ void testApp::draw()
 
 //--------------------------------------------------------------
 
-void testApp::spoke(float x,float y, float rout, float rin,float alpha) {
-    //not used
-    float xindelta=rin*cos(alpha);
-    float xoutdelta=rout*cos(alpha);
-    float yindelta=rin*sin(alpha);
-    float youtdelta=rout*sin(alpha);
-    ofSetLineWidth(2);
-    
-    ofLine(x+xindelta,y-yindelta,x+xoutdelta,y-youtdelta);
-}
 
-void testApp::olddraw()
-{
-	//cout << "draw " << (tabort2++) << endl;
-	if (!phototaken) {
-		//first draw
-	}
-	else {
-		//cout << maxSound << endl;
-		
-		ofSetColor(0,255,255);		
-		
-		//do filtering based on something
-		if (!photodrawn) {
-            //	filtertype=ofRandom(0,5);
-			cout << "filtertype = " << filtertype << endl;
-            
-		}
-		if (filtertype == -1)
-		{
-            //all filters should go here
-        } 
-        else 
-        { //fallback
-            drawImage.draw(0, -61,ofGetWidth(),ofGetHeight());
-            photodrawn=true;
-        }
-        
-        if (uploadcountdown>0) {
-            uploadcountdown--;
-            if (uploadcountdown==0){
-                //upload on some draws after picture is taken and filtered, otherwize a white image may be uploaded
-                int i=0;
-                bool success=false;
-                while(!success && i<numberOfUploadThreads){
-                    if (!tup[i].isThreadRunning()){
-                        tup[i].upload(uploadImage);
-                        success=true;
-                    }
-                    i++;
-                }
-                if (!success){
-                    NSLog(@"%@",@"couldn't upload, all threads running");
-                }
-             }
-        }
-        for (int i=0;i<numberOfUploadThreads;i++){
-            if (tup[i].isThreadRunning()) {
-                cout << "r"; 
-            }
-            else {
-                cout << "n";
-            }    
-        }
-        cout << threadedUpload::count << " ";
 
-    }
-
-    //too be used at some point, maybe
-    /*
-    if (tup.uploaded) {
-        ofSetColor(128,128,128);
-        ofRect(6,ofGetHeight()-130,ofGetWidth()-12,24);
-        ofSetColor(255, 255, 255);
-        ofDrawBitmapString("uploaded", 20, ofGetHeight()-118);
-
-    }
-     */
-    
-    if(isButtonDown)
-	{
-		buttonDown.draw(0, ofGetHeight()-buttonUp.getHeight(),ofGetWidth(),buttonUp.getHeight());
-		
-	}
-	else {
-		buttonUp.draw(0, ofGetHeight()-buttonUp.getHeight(),ofGetWidth(),buttonUp.getHeight());
-	}
-	
-	if(showDebug)
-	{
-		drawDebug();
-	}
-
-}
 
 void testApp::drawDebug()
 {
@@ -713,6 +610,7 @@ void testApp::touchUp(ofTouchEventArgs &touch){
                 
                 
                 phototaken=false;
+                filtercountdown=3;
                 
                 
                 if (cameramode==0) {
