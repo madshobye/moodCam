@@ -215,7 +215,6 @@ public:
     IplImage *cvImageTemp;
 
     bool phototaken;
-	bool photodrawn;
 
 	int filtercountdown; //to allow a few update-draw-cycles before filtering starts
     

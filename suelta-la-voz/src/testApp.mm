@@ -83,7 +83,6 @@ void testApp::setup(){
  	taptreshold=1000;
 	showDebug = false;
 	phototaken=false;
-	photodrawn=false;
 
 
 	
@@ -214,7 +213,7 @@ void testApp::update()
             //to start with, for the filters to work with, we have the image drawImage of type ofxCvColorImage
             //and when we are ready we should have the filtered image back in drawImage (drawn) but
             //we also need the filtered image in uploadImage (uploaded)
-            
+//ok, next step is to get all the old filters working.             
             filtertype=1;
             if (filtertype==0) {
                 //no filter
@@ -324,10 +323,10 @@ void testApp::update()
             
             camera->imageUpdated=false;
             phototaken=true;
-            photodrawn=false;
+
             
             //upload filtered photo
- /*           int i=0;
+            int i=0;
             bool success=false;
             while(!success && i<numberOfUploadThreads){
                 if (!tup[i].isThreadRunning()){
@@ -338,7 +337,7 @@ void testApp::update()
             }
             if (!success){
                 NSLog(@"%@",@"couldn't upload, all threads running");
-            }*/
+            }
         }
 	}
     //if (camera->imageUpdated) ends here
@@ -395,6 +394,13 @@ void testApp::draw() {
     if (!phototaken) {
         ofSetColor(255,100,0);//orange for debugging purposes
         ofRect(0, 0, ofGetWidth(), ofGetHeight());
+        if (camera->imageUpdated){      
+            //here we should say something like please wait, filtering in progress.......
+            ofSetColor(100,255,0);
+            char* s = new char[30];
+            sprintf(s, "%s", "filtering...");
+            ofDrawBitmapString(s, 20, ofGetHeight()-200);
+        }
 	}
 	else {
         float drawHeight;
@@ -416,7 +422,7 @@ void testApp::draw() {
             drawHeight=drawImage.height*drawWidth/drawImage.width;
             drawImage.draw(0, 0,drawWidth,drawHeight);            
         }
-        photodrawn=true;
+        
 
     }
 
