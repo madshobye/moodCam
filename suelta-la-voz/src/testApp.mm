@@ -213,8 +213,6 @@ void testApp::update()
             //to start with, for the filters to work with, we have the image drawImage of type ofxCvColorImage
             //and when we are ready we should have the filtered image back in drawImage (drawn) but
             //we also need the filtered image in uploadImage (uploaded)
-//ok, next step is to get all the old filters working.             
-            filtertype=1;
             if (filtertype==0) {
                 //no filter
                 now=dis(0,"");
@@ -235,26 +233,24 @@ void testApp::update()
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"filter step 1");
-                filterCurves_hsv(uploadImage, drawImage.getWidth(), drawImage.getHeight(),0.5); //amount should be affected by senses
-                now=dis(now,"filter step 2");
+                now=dis(now,"from drawImage to uploadImage");
+                filterCurves_hsv(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                now=dis(now,"filterCurves_hsv");
                 //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
             } else if (filtertype==3) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"filter step 1");
+                now=dis(now,"from drawImage to uploadImage");
                 filterVignette_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),-1);
-                now=dis(now,"filter step 2");
+                now=dis(now,"filterVignette_2");
                 //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
 
             } else if (filtertype==4) {
-                //this often crashes
                 for(int i =0; i < 10;i++)
-                {
-                    cout << "ant iteration " << i << endl;
-                    ant(cameraPixelsNoAlpha,ofRandom(0,drawImage.getWidth()), ofRandom(0,drawImage.getHeight()),ofRandom(0,2*PI),drawImage.getWidth(), drawImage.getHeight(), 8,0.5);
-                }     
+				{
+					ant(cameraPixelsNoAlpha,ofRandom(0,drawImage.getWidth()), ofRandom(0,drawImage.getHeight()),ofRandom(0,2*PI),drawImage.getWidth(), drawImage.getHeight(), 8,senses);
+				}
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
             } else if (filtertype==5) {
@@ -271,24 +267,27 @@ void testApp::update()
                 //yes, this was the way to do it. 
                 //but must find a way to do it if appying two filters, one with pixels, one with iplimage...
                 //no problem if working with pixels before iplimage, but maybe problem if working with
-                //pixels after iplimage.  how to get pixels from iplimage???
+                //pixels after iplimage.  how to get pixels from iplimage??? answer: img->imageData
         
             } else if (filtertype==6) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                //uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3); maybe this isn't needed???
+                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                
-            } else if (filtertype==7) {
+                now=dis(now,"from drawImage to uploadImage");
+                filterCurves_crazy(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                now=dis(now,"filterCurves_crazy");
+                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended                            
+            } else if (filtertype==7) {           
+                filterGlitch(cameraPixelsNoAlpha,camera->width,camera->height,senses);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
-                
             } else if (filtertype==8) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
-                
             } else if (filtertype==9) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
-                
             } else {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();

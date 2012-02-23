@@ -12,19 +12,6 @@
 #include "MSACore.h"
 
 
-void filterSelector(int filternumber, unsigned char * pixels,int width, int height, int amount){
-	//don't know switch syntax in c++, using if instead
-	cout<< "selecting filter number " << filternumber << endl;
-	if (filternumber==0){
-		filterGeneral(pixels, width, height, amount);
-	} 
-	else if (filternumber==1){
-		filterInvert(pixels, width, height, amount);
-	} 
-	else if (filternumber==2){
-		filterInvertRB(pixels, width, height, amount);
-	} 
-}
 	
 //--------------------------------------------------------------
 void filterGeneral(unsigned char * pixels,int width, int height, int amount){
@@ -54,7 +41,6 @@ void filterGeneral(unsigned char * pixels,int width, int height, int amount){
 void filterInvert(unsigned char * pixels,int width, int height, int amount){
 	//filter #1
 	//amount is an integer between 0 and 100 but is not used in this filter
-	cout << "filterInvert applied, " <<  amount << "%" << endl;
 	for(int i=0 ; i <width*height*4;  i+=4) 
 	{
 		//R
@@ -69,7 +55,6 @@ void filterInvert(unsigned char * pixels,int width, int height, int amount){
 
 void filterInvertRB(unsigned char * pixels,int width, int height, int amount){
 	//filer #2
-	std::cout << "filterInvertRB applied" << endl;
 	for(int i=0 ; i <width*height*4;  i+=4) 
 	{
 		//R
@@ -103,7 +88,6 @@ void filterCurves_2(IplImage * img,int width, int height,senseMaker * senses[])
 	spline2D[2].push_back(MSA::Vec2f(0.75,0.50*amount));
 	spline2D[2].push_back(MSA::Vec2f(1,1));
 	
-	std::cout << "filterInvertRB applied" << endl;
 	
 	for( int y=0; y<img->height; y++ ) { 
 		uchar* ptr = (uchar*) (img->imageData + y * img->widthStep); 
@@ -120,31 +104,29 @@ void filterCurves_2(IplImage * img,int width, int height,senseMaker * senses[])
 	
 }
 
-/**************
-void filterCurves_2(IplImage * img,int width, int height, float amount)
+void filterCurves_crazy(IplImage * img,int width, int height,senseMaker * senses[])
 {
-
+	float amount = senses[0]->max;
 	float iAmount = 1-amount;
 	MSA::Interpolator2D				spline2D[3];
 	MSA::InterpolationType			interpolationType	= MSA::kInterpolationCubic;
 	
 	
 	spline2D[0].push_back(MSA::Vec2f(0,0));
-	spline2D[0].push_back(MSA::Vec2f(0.25,0.20/iAmount));
-	spline2D[0].push_back(MSA::Vec2f(0.75,0.80*amount));
+	spline2D[0].push_back(MSA::Vec2f(0.25+senses[0]->valueEnergy,0.20));
+	spline2D[0].push_back(MSA::Vec2f(senses[0]->valueEnergy,0.80*senses[1]->valueChange*10));
 	spline2D[0].push_back(MSA::Vec2f(1,1));
 	
 	spline2D[1].push_back(MSA::Vec2f(0,0));
 	spline2D[1].push_back(MSA::Vec2f(0.25*amount,0.30));
-	spline2D[1].push_back(MSA::Vec2f(0.75/iAmount,0.80));
-	spline2D[1].push_back(MSA::Vec2f(1,1));
+	spline2D[1].push_back(MSA::Vec2f(0.75*iAmount,0.80));
+	spline2D[1].push_back(MSA::Vec2f(1*senses[0]->valueChange/10,1));
 	
-	spline2D[2].push_back(MSA::Vec2f(0,0));
-	spline2D[2].push_back(MSA::Vec2f(0.25*amount,0.10));
+	spline2D[2].push_back(MSA::Vec2f(0*senses[0]->max*10,0));
+	spline2D[2].push_back(MSA::Vec2f(0.25*senses[1]->valueEnergy/5,0.10));
 	spline2D[2].push_back(MSA::Vec2f(0.75,0.50*amount));
-	spline2D[2].push_back(MSA::Vec2f(1,1));
+	spline2D[2].push_back(MSA::Vec2f(1,senses[1]->max));
 	
-	std::cout << "filterCurves_2 applied" << endl;
 	
 	for( int y=0; y<img->height; y++ ) { 
 		uchar* ptr = (uchar*) (img->imageData + y * img->widthStep); 
@@ -158,18 +140,34 @@ void filterCurves_2(IplImage * img,int width, int height, float amount)
 			}
 		}
 	}
-
- 
- 
-
+	
 }
-*******************/
 
-
-
-void filterCurves_hsv(IplImage * img,int width, int height, float amount)
+void filterGlitch(unsigned char * pixels,int width, int height,senseMaker * senses[])
 {
-	amount = (1.0f-min(1.0f,amount*2))/2.0f;
+	long counter[] = {0,0,0};
+	
+	for(int pos = 0; pos < width * height*3;pos = pos +3)
+	{
+		for(int c = 0; c < 3;c++)
+		{
+            
+			if(ofRandom(0,10000)<senses[0]->valueEnergy)
+			{
+				counter[c] = counter[c] + ofRandom(senses[0]->valueEnergy,senses[1]->valueEnergy*500);
+			}
+			
+			pixels[pos+c] = pixels[ (counter[c]*3+c) % ( width * height*3)];
+            counter[c] = counter[c] + 1;
+		}
+	}
+}
+
+
+
+void filterCurves_hsv(IplImage * img,int width, int height,senseMaker * senses[])
+{
+	float amount = (1.0f-min(1.0f,senses[1]->valueChange*2))/2.0f;
 	cout << "\n";
 	cout << amount;
 	cout << "\n";
@@ -178,13 +176,13 @@ void filterCurves_hsv(IplImage * img,int width, int height, float amount)
 	MSA::InterpolationType			interpolationType	= MSA::kInterpolationCubic;
 	
 	
-	spline2D[0].push_back(MSA::Vec2f(0,0.80/iAmount));
+	spline2D[0].push_back(MSA::Vec2f(0,0.80/senses[1]->valueEnergy));
 	spline2D[0].push_back(MSA::Vec2f(0.25,0.30/iAmount));
-	spline2D[0].push_back(MSA::Vec2f(0.75,0.50*iAmount));
+	spline2D[0].push_back(MSA::Vec2f(0.75,0.50*senses[1]->valueEnergy));
 	spline2D[0].push_back(MSA::Vec2f(1,1*iAmount));
 	
 	spline2D[1].push_back(MSA::Vec2f(0,0.80*iAmount));
-	spline2D[1].push_back(MSA::Vec2f(0.25,0.20*iAmount));
+	spline2D[1].push_back(MSA::Vec2f(0.25,0.20*senses[0]->valueEnergy/6));
 	spline2D[1].push_back(MSA::Vec2f(0.75,0.90/iAmount));
 	spline2D[1].push_back(MSA::Vec2f(1,0.3*iAmount));
 	
@@ -193,7 +191,6 @@ void filterCurves_hsv(IplImage * img,int width, int height, float amount)
 	//spline2D[2].push_back(MSA::Vec2f(0.75,0.50*iamount));
 	spline2D[2].push_back(MSA::Vec2f(1,1));
 	
-	std::cout << "filterCurves_hsv applied" << endl;
 	
 	for( int y=0; y<img->height; y++ ) { 
 		uchar* ptr = (uchar*) (img->imageData + y * img->widthStep); 
@@ -210,30 +207,30 @@ void filterCurves_hsv(IplImage * img,int width, int height, float amount)
 	
 	//draw curve 
 	char * pixels = img->imageData;
-		int numsteps = 255;
-	 float spacing = 1.0/numsteps;
-	 for(float x=0 ; x <1;  x+=spacing) 
-	 {
-	 for(int c = 0; c < 3; c++)
-	 {
-	 MSA::Vec2f v	= spline2D[c].sampleAt(x);
-	 //cout << round(v.y*100);
-	 //cout << '\n';
-	 if(v.y >=0 && v.y <=1)
-	 {
-	 int pos = round(x*255.0f)*3		+round(v.y*255.0f)*width*3;
-	 pixels[pos] = 255;
-	 pixels[pos+1] = 255;
-	 pixels[pos+2] = 255;
-	 
-	 }
-	 }
-	 
-	 }
+	int numsteps = 255;
+	float spacing = 1.0/numsteps;
+	for(float x=0 ; x <1;  x+=spacing) 
+	{
+		for(int c = 0; c < 3; c++)
+		{
+			MSA::Vec2f v	= spline2D[c].sampleAt(x);
+			//cout << round(v.y*100);
+			//cout << '\n';
+			if(v.y >=0 && v.y <=1)
+			{
+				int pos = round(x*255.0f)*3		+round(v.y*255.0f)*width*3;
+				pixels[pos] = 255;
+				pixels[pos+1] = 255;
+				pixels[pos+2] = 255;
+				
+			}
+		}
+		
+	}
 }
 
 void filterVignette_2(IplImage * img,int width, int height, int amount){
-	
+	//amount not used
 	MSA::Interpolator2D				spline2D;
 	
 	
@@ -257,7 +254,6 @@ void filterVignette_2(IplImage * img,int width, int height, int amount){
 			
 			MSA::Vec2f v	= spline2D.sampleAt(1-distanceFromMiddle/longest);
 			float brightness = fmin(fmax(v.y,0),1);
-			int pixelPos = (y*width+x)*3;
 		
 			ptr[3*x] = round((float)ptr[3*x] * brightness);
 			ptr[3*x+1] = round((float)ptr[3*x+1] * brightness);
@@ -270,95 +266,79 @@ void filterVignette_2(IplImage * img,int width, int height, int amount){
 	}
 
 	
-	/*
-	//draw curve 
-	int numsteps = 255;
-	float spacing = 1.0/numsteps;
-	for(float x=0 ; x <1;  x+=spacing) 
-	{
-		
-		MSA::Vec2f v	= spline2D.sampleAt(x);
-		cout << round(v.y*100);
-		cout << '\n';
-		if(v.y >=0 && v.y <=1)
-		{
-			int pos = round(x*255.0f)*3		+round(v.y*255.0f)*width*3;
-			pixels[pos] = 255;
-			pixels[pos+1] = 255;
-			pixels[pos+2] = 255;
-			
-		}
-		
-	}*/
 	
 }
 
-void ant(unsigned char * pixels,int posX, int posY,float dir, int width, int height, int depth, float amount)
+void ant(unsigned char * pixels,int posX, int posY,float dir, int width, int height, int depth, senseMaker * senses[])
 {
-    cout << "entering ant, depth: " << depth << endl;
-	if(depth> 0 && posX < width -20 && posY<height -20 && posX > 20 && posY > 20)
+    
+    
+	if(depth> 0 && posX < width -10 && posY<height -10 && posX > 10 && posY > 10)
 	{
-        cout << "-";
-		for(int i =0; i < 10; i ++)
+		for(int i =0; i < ofRandom(200,600); i ++)
 		{
-            cout << "/";
-            int value1 =  pixels[(posY*width + posX)*3]+ pixels[(posY*width + posX)*3+1] + pixels[(posY*width + posX)*3+2] ;
-            int smallestDiff = 1000;
-            int tHor = 1;
-            int tVer = 1;
-                int tDir = dir;
-            posY -1;
-            int values[3][3];
-                
-            /*
-            program stuck like this:
-            ant iteration 0
-            entering ant, depth: 6
-            ant iteration 1
-            entering ant, depth: 6
-            -/___/___/___re-cursing:) 
-            entering ant, depth: 5
-            -/_______________
-            */
-                
-            for(float angle = -PI/2.0f; angle < PI/2.0f;angle+=PI/4)
+			int value1 =  pixels[(posY*width + posX)*3]+ 
+            pixels[(posY*width + posX)*3+1] + 
+            pixels[(posY*width + posX)*3+2] ;
+			
+			int pixelPos = (posY*width+posX)*3;
+			
+			pixels[pixelPos ] = 255;
+			pixels[pixelPos+1] = 255;
+			pixels[pixelPos+2] = 255;
+			
+			
+			int smallestDiff = 100000;
+			int tHor = round(cos(dir) * 1.0f);
+			int tVer = round(sin(dir) * 1.0f);
+			float tDir = dir;
+            
+			int tmpValue= 0;
+            
+            for(float b = -PI/2.0f; b < PI/2.0f;b = b + PI/4.0f)
             {
-                cout << "_" << angle;
-                int ver = round(cos(angle+dir) * 1.0f);
-                int hor =  round(sin(angle+dir) * 1.0f);
-                values[ver][hor] = 
+                
+                int ver = round(cos(b+dir) * 1.0f);
+                int hor =  round(sin(b+dir) * 1.0f);
+				
+                
+                tmpValue = 
                 pixels[((posY+ver)*width + posX+hor)*3 ]+
                 pixels[((posY+ver)*width + posX+hor)*3+1]+
                 pixels[((posY+ver)*width + posX+hor)*3+2];
-                if(abs(value1 -values[ver][hor]) < smallestDiff)
+                if(abs(value1 - tmpValue) < smallestDiff && tmpValue < 255*3 )
                 {
-                    smallestDiff = abs(value1 -values[ver][hor]);
+                    smallestDiff = abs(value1 - tmpValue);
                     tHor = hor;
                     tVer = ver;
-                    tDir = dir + angle;
+                    tDir = b;
                 }
+                
             }
             
-        
-            posY = posY + tVer;
-            posX = posX + tHor;
+			
             
+			if(depth> 0 && posX < width -10 && posY<height -10 && posX > 10 && posY > 10)
+			{
+				dir = dir*0.4 + tDir*0.6;
+				posY = posY + tVer;
+				posX = posX + tHor;
+				
+				if(ofRandom(0,100)<1)
+				{
+					ant(pixels,posX, posY,dir+ofRandom(0,PI*2),width, height,  depth-1,senses);
+				}
+				
+			}
+			else
+			{
+				break;
+			}
             
-            pixels[((posY)*width + posX)*3 ] = 255;//här blev det exec bad access
-            pixels[((posY)*width + posX)*3+1] = 255;
-            pixels[((posY)*width + posX)*3+2] = 255;
-            
-            if(ofRandom(0,100)<20)
-            {
-                cout << "re-cursing:) " << endl;
-                ant(pixels,posX+ round(ofRandom(-2, 2)), posY+ round(ofRandom(-2, 2)),tDir,width, height, depth-1,amount);
-            }	
-		
 		}
-	
+		
 	}
 }
-
 
 void filterCurves(unsigned char * pixels,int width, int height, float amount)
 	{
