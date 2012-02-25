@@ -15,22 +15,17 @@
 	
 //--------------------------------------------------------------
 void filterGeneral(unsigned char * pixels,int width, int height, int amount){
-	//filter #0
-	for(int i=0 ; i <width*height*4;  i=i+2-((i%4)!=2))
-		//i=i+2-((i%4)!=2) ??? geekiest way i could think of to count 0 1 2 4 5 6 8 9 10... (skipping every forth element containing alpha channel)
-		//ok, i+=2-((i%4)!=2) might be even geekier...
+	for(int i=0 ; i <width*height*3;  i++)
 	{
-		//inverting 0 1 2 3 5 6 7 9 10 11 13 14 15 17 18 19 21 22 23 25 26 27 29 and then normal 
-		//invert of picture is also quite nice
-		if ((i % 4) == 0) //R
+		if ((i % 3) == 0) //R
 		{
-			pixels[i] = 0; 255-pixels[i];
+			pixels[i] = 0;
 		}
-		if ((i % 4) == 1) //G
+		if ((i % 3) == 1) //G
 		{
 			pixels[i] = 55-pixels[i];
 		}
-		if ((i % 4) == 2) //B
+		if ((i % 3) == 2) //B
 		{
 			pixels[i] = 200-pixels[i];
 		}
@@ -39,9 +34,8 @@ void filterGeneral(unsigned char * pixels,int width, int height, int amount){
 
 //--------------------------------------------------------------
 void filterInvert(unsigned char * pixels,int width, int height, int amount){
-	//filter #1
 	//amount is an integer between 0 and 100 but is not used in this filter
-	for(int i=0 ; i <width*height*4;  i+=4) 
+	for(int i=0 ; i <width*height*3;  i+=3) 
 	{
 		//R
 		pixels[i] = 255-pixels[i];
@@ -51,19 +45,6 @@ void filterInvert(unsigned char * pixels,int width, int height, int amount){
 		pixels[i+2] = 255-pixels[i+2];
 	}
 }
-
-
-void filterInvertRB(unsigned char * pixels,int width, int height, int amount){
-	//filer #2
-	for(int i=0 ; i <width*height*4;  i+=4) 
-	{
-		//R
-		pixels[i] = 255-pixels[i];
-		//B
-		pixels[i+2] = 255-pixels[i+2];
-	}
-}
-
 
 void filterCurves_2(IplImage * img,int width, int height,senseMaker * senses[])
 {
@@ -108,9 +89,7 @@ void filterCurves_crazy(IplImage * img,int width, int height,senseMaker * senses
 {
 	float amount = senses[0]->max;
 	float iAmount = 1-amount;
-	MSA::Interpolator2D				spline2D[3];
-	MSA::InterpolationType			interpolationType	= MSA::kInterpolationCubic;
-	
+	MSA::Interpolator2D				spline2D[3];	
 	
 	spline2D[0].push_back(MSA::Vec2f(0,0));
 	spline2D[0].push_back(MSA::Vec2f(0.25+senses[0]->valueEnergy,0.20));
@@ -172,9 +151,7 @@ void filterCurves_hsv(IplImage * img,int width, int height,senseMaker * senses[]
 	cout << amount;
 	cout << "\n";
 	float iAmount = 1.0f- amount;
-	MSA::Interpolator2D				spline2D[3];
-	MSA::InterpolationType			interpolationType	= MSA::kInterpolationCubic;
-	
+	MSA::Interpolator2D				spline2D[3];	
 	
 	spline2D[0].push_back(MSA::Vec2f(0,0.80/senses[1]->valueEnergy));
 	spline2D[0].push_back(MSA::Vec2f(0.25,0.30/iAmount));
@@ -344,9 +321,7 @@ void filterCurves(unsigned char * pixels,int width, int height, float amount)
 	{
 		
 		float iAmount = 1-amount;
-		MSA::Interpolator2D				spline2D[3];
-		MSA::InterpolationType			interpolationType	= MSA::kInterpolationCubic;
-
+		MSA::Interpolator2D	spline2D[3];
 		
 		spline2D[0].push_back(MSA::Vec2f(0,0));
 		spline2D[0].push_back(MSA::Vec2f(0.25,0.20/iAmount));
@@ -412,7 +387,6 @@ void filterVignette(unsigned char * pixels,int width, int height, int amount){
 	
 	MSA::Interpolator2D				spline2D;
 	
-	
 	spline2D.push_back(MSA::Vec2f(0,0.1));
 	spline2D.push_back(MSA::Vec2f(0.10,0.75));
 	spline2D.push_back(MSA::Vec2f(0.20,0.95));
@@ -473,7 +447,8 @@ float sqr(float value)
 }
 
 void filterFrameit(unsigned char * pixels,int width, int height, int amount){
-	int mySize = min(width,height)-min(width,height) /15;
+	//amount not used
+    int mySize = min(width,height)-min(width,height) /15;
 	
 	for(int x = 0; x < width;x++){
 		for(int y = 0; y < height; y ++)
@@ -489,14 +464,11 @@ void filterFrameit(unsigned char * pixels,int width, int height, int amount){
 			}           
         }
     }
+	
+}
 
-	
-			
-	
-	// inside 
-	// nothing
-	
-	// border
-	
-	
+
+void filterSmooth(IplImage * img,int width, int height, int amount){
+    amount=(amount/2)*2+1; //value must be odd, this line makes sure it is odd
+    cvSmooth(img, img, CV_BLUR , amount);
 }

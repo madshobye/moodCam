@@ -283,42 +283,25 @@ void testApp::update()
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
             } else if (filtertype==8) {
+                filterGeneral(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
             } else if (filtertype==9) {
+                filterInvert(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
+            } else if (filtertype==10) {
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                now=dis(0,"");
+                uploadImage=drawImage.getCvImage();
+                now=dis(now,"from drawImage to uploadImage");
+                filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
+                now=dis(now,"filterSmooth");
+                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
             } else {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                uploadImage=drawImage.getCvImage();
-                
-            }
-
-            
-            /*
-            {
-                now=dis(0,"");
-                //convert ofxcvcolorImage to opencv-image (IplImage)
-                uploadImage = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-                now=dis(now,"fast: time to filter step 1");
-                cvImageTemp = cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-                now=dis(now,"fast: time to filter step 2");
-                uploadImage=drawImage.getCvImage();
-                now=dis(now,"ultrafast: time to filter step 3");
-                int value=0; 
-                value=(value/2)*2+1; //value must be odd, this line makes sure it is odd
-                cout << "value " << value << endl;
-                cvSmooth(uploadImage, cvImageTemp, CV_BLUR , value);
-                now=dis(now,"slow: time to filter step 4");
-                uploadImage=cvImageTemp;
-                now=dis(now,"ultrafast: time to filter step 5");
-                drawImage=uploadImage; //works, and seems to be safe
-                now=dis(now,"medium: time to filter step 6");
-            }
-             */
-            
-            
-            
+                uploadImage=drawImage.getCvImage();            
+            }            
             
             camera->imageUpdated=false;
             phototaken=true;
