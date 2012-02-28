@@ -60,7 +60,7 @@ void testApp::setup(){
 
     
     
-    chune.loadSound("sounds/suelta-la-voz_reverse.mp3");
+    chune.loadSound("sounds/suelta-la-voz.caf");
 	chune.setVolume(1.0f);
 	chune.setMultiPlay(false);
     chunepaused=true;
