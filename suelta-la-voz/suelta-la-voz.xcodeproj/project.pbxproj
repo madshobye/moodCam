@@ -12,8 +12,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		5205AADB14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */; };
-		522261C8141EBB3A00207339 /* buttonDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 522261C6141EBB3A00207339 /* buttonDown.png */; };
-		522261C9141EBB3A00207339 /* buttonUp.png in Resources */ = {isa = PBXBuildFile; fileRef = 522261C7141EBB3A00207339 /* buttonUp.png */; };
 		5252B1AB141A456F0077A748 /* install.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5252B13F141A456F0077A748 /* install.xml */; };
 		5252B1AC141A456F0077A748 /* opencv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5252B195141A456F0077A748 /* opencv.a */; };
 		5252B1AD141A456F0077A748 /* opencv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5252B197141A456F0077A748 /* opencv.a */; };
@@ -85,8 +83,6 @@
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* iPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhone_Prefix.pch; sourceTree = "<group>"; };
 		5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md-emptywheel-noalpha.png"; path = "images/cassette-md-emptywheel-noalpha.png"; sourceTree = "<group>"; };
-		522261C6141EBB3A00207339 /* buttonDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buttonDown.png; sourceTree = "<group>"; };
-		522261C7141EBB3A00207339 /* buttonUp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = buttonUp.png; sourceTree = "<group>"; };
 		5252B13F141A456F0077A748 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
 		5252B144141A456F0077A748 /* cv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cv.h; sourceTree = "<group>"; };
 		5252B145141A456F0077A748 /* cv.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cv.hpp; sourceTree = "<group>"; };
@@ -669,8 +665,6 @@
 		BB24DD8B10DA77E000E9C588 /* data */ = {
 			isa = PBXGroup;
 			children = (
-				522261C6141EBB3A00207339 /* buttonDown.png */,
-				522261C7141EBB3A00207339 /* buttonUp.png */,
 				BB24DD8C10DA77E000E9C588 /* Default.png */,
 				BB24DD8D10DA77E000E9C588 /* Icon.png */,
 				52CA22931496B2360067BAAB /* sounds */,
@@ -800,8 +794,6 @@
 				52C328C5141DF22300787075 /* changelog.txt in Resources */,
 				52C328C6141DF22300787075 /* install.xml in Resources */,
 				52C328C7141DF22300787075 /* LICENSE.txt in Resources */,
-				522261C8141EBB3A00207339 /* buttonDown.png in Resources */,
-				522261C9141EBB3A00207339 /* buttonUp.png in Resources */,
 				526CDA7714C97856000D7923 /* suelta-la-voz.caf in Resources */,
 				526B479414D1588000D0B4A6 /* cassette-md-emptywheel.png in Resources */,
 				526B479514D1588000D0B4A6 /* cassette-md.png in Resources */,

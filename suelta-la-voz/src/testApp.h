@@ -259,11 +259,7 @@ public:
 	   
 	bool showDebug;
 	
-	ofImage buttonDown;
-	ofImage buttonUp;
-	bool isButtonDown;
-    int xDown;
-    int yDown;
+    int lasttick;
 	
     static const int numberOfUploadThreads=8;
     threadedUpload tup[numberOfUploadThreads];
@@ -273,11 +269,36 @@ public:
     //ofxOpenALSoundPlayer chune; //can play mp3 but not set speed
     bool chunepaused;
     float chuneposition;
-    
+    bool chuneWasPlaying;
     
     //cameramode
     int cameramode;
 
+    
+    
+    //interaction icon variables
+
+    bool isButtonDown;
+    bool hasBeenOut;
+    
+    enum buttonNames { 
+        unknownb,  //0
+        camerab,   //1
+        cassetteb, //2
+        settingsb  //3
+    };
+    
+    enum buttonNames touchDownButton;
+    enum buttonNames touchUpButton;
+    enum buttonNames touchMovedButton;
+    
+    ofRectangle cameraButton;
+    ofRectangle cassetteButton;
+    ofRectangle settingsButton;
+    
+    ofPoint touchDownPoint;
+    ofPoint touchMovedPoint;
+    ofPoint touchUpPoint;
     
     ofImage instaicon;
     

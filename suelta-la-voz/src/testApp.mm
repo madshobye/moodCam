@@ -1,16 +1,30 @@
 #import <UIKit/UIKit.h>
 #include "testApp.h"
 
-
-
-
 int threadedUpload::count=0;
 
+int tick(int last, char * s) {
+    int now=ofGetElapsedTimeMillis();
+    if (now>(last+1000)) {
+        cout << s << endl;
+        return now;
+    } else {
+        return last;
+    }
+}
 
 //--------------------------------------------------------------
 void testApp::setup(){	
     ofBackground(0,0,0);
     filtercountdown=0;
+
+    lasttick=0;
+    
+    //size and position of icons and buttons
+    cassetteButton.set(0*107,ofGetHeight()-67,107,67);
+    cameraButton.set(1*107,ofGetHeight()-67,107,67);
+    settingsButton.set(2*107,ofGetHeight()-67,107,67);
+    
     
     
     //cassette animation
@@ -64,12 +78,9 @@ void testApp::setup(){
 	chune.setVolume(1.0f);
 	chune.setMultiPlay(false);
     chunepaused=true;
+    chuneWasPlaying=false;
     chuneposition=0;
     
-    chuneposition=0.5;
-    
-	buttonDown.loadImage("buttonDown.png");
-	buttonUp.loadImage("buttonDown.png");
 	isButtonDown = false;
 		
 	senseAudio.init(0.5,0.5*0.001,0.5*0.0001,0.5*0.00001,2/(2.59*44100*60+1),44100);
@@ -376,6 +387,10 @@ void testApp::update()
 	
 	
 
+    
+    char * s = new char[100];
+    sprintf(s,"chunepaused: %d, chuneWasPlaying: %d",chunepaused,chuneWasPlaying); 
+    lasttick=tick(lasttick,s);
 	
 }
 
@@ -486,7 +501,6 @@ void testApp::drawDebug()
 {
     
 	ofSetColor(50, 50, 50,90);
-	ofRect(0, 0, ofGetWidth(), ofGetHeight()-buttonUp.getHeight());
 	
 	
 	ofSetColor(0,0,255);
@@ -557,112 +571,224 @@ void testApp::exit() {
 
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs &touch){
-	if(touch.id == 0 && touch.y > ofGetHeight()- 70)
-	{
-		isButtonDown = true;
-        xDown=touch.x;
-        yDown=touch.y;
-	}
-	
-	
-	
+	touchDownPoint.set(touch.x,touch.y);
+    if (touch.id==0) {
+        if (cassetteButton.inside(touchDownPoint)) {
+            isButtonDown=true;
+            hasBeenOut=false;
+            touchDownButton=cassetteb;
+            //check if tune was playing or not at touchDown
+            chuneWasPlaying=!chunepaused;
+        } else if (cameraButton.inside(touchDownPoint)) {
+            isButtonDown=true;
+            hasBeenOut=false;
+            touchDownButton=camerab;
+        } else if (settingsButton.inside(touchDownPoint)) {
+            isButtonDown=true;
+            hasBeenOut=false;
+            touchDownButton=settingsb;
+        } else {
+            isButtonDown=false;
+            hasBeenOut=false;
+            touchDownButton=unknownb;
+        }
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs &touch){
-	/* from sound player example:
-    if( touch.id == 0 ){
-		// continuously control the speed of the beat sample via drag, 
-		// when in the "beat" region:
-		float widthStep = ofGetWidth() / 3.0f;
-		if (touch.x >= widthStep && touch.x < widthStep*2){
-			//beats.setSpeed( 0.5f + ((float)(ofGetHeight() - touch.y) / (float)ofGetHeight())*1.0f);
-            beats.setPosition(((float)(ofGetHeight() - touch.y) / (float)ofGetHeight())*1.0f);
-		} 
-	}
-     */
+    touchMovedPoint.set(touch.x,touch.y);
     if (touch.id==0) {
-        
-        if (touch.x>100 && !chunepaused){
-            //cout << "touch Moved: " << touch.x << endl;
-            chune.setSpeed((touch.x-100)/10+1);
-            cout << chune.getSpeed() << endl;
+        //if touch down in cassette, and chune playing, and moved to the right: just change speed
+        //if touch down in cassette, and chune not playing, start tune, and also change speed
+        //also, remember that we have been out of button
+        if (cassetteButton.inside(touchMovedPoint)) {
+            touchMovedButton=cassetteb;
+        } else if (cameraButton.inside(touchMovedPoint)) {
+            touchMovedButton=camerab;
+        } else if (settingsButton.inside(touchMovedPoint)) {
+            touchMovedButton=settingsb;
+        } else {
+            touchMovedButton=unknownb;
         }
-        else {
-            chune.setSpeed(1);
+        if (touchMovedButton!=touchDownButton) {
+            hasBeenOut=true;
+        }
+        if (touchDownButton==cassetteb && hasBeenOut) {
+            if (touchMovedPoint.x>(cassetteButton.x+cassetteButton.width)) {
+                chune.setSpeed((touchMovedPoint.x-(cassetteButton.x+cassetteButton.width))/10+1);
+                cout << chune.getSpeed() << endl;
+                if (chunepaused) {
+                    chune.play();
+                    chune.setPosition(chuneposition);
+                    chunepaused=false;
+                }
+            } else { //here should be an if else to the left of button and then setSpeed(1)
+                cout << "logial error no more???" << endl; 
+                if (!chuneWasPlaying) {
+                    cout<< "more logical error no more???" << endl;
+                    chuneposition=chune.getPosition();
+                    chune.stop();
+                    chunepaused=true;
+                } else {
+                    chune.setSpeed(1);
+                }
+            }
+
         }
     }
+    
+    
+//    if (touch.id==0) {
+//        
+//        if (touch.x>100 && !chunepaused){
+//            //cout << "touch Moved: " << touch.x << endl;
+//            chune.setSpeed((touch.x-100)/10+1);
+//            cout << chune.getSpeed() << endl;
+//        }
+//        else {
+//            chune.setSpeed(1);
+//        }
+//    }
     
     
 }
 
 //--------------------------------------------------------------
 void testApp::touchUp(ofTouchEventArgs &touch){
-    
-    
-    chune.setSpeed(1.0); //more logic here, but ok for now.
-    
-    
-	if(touch.id == 0 && touch.y > ofGetHeight()- 70 && isButtonDown) {
-        cout << "touch detected" << endl;
-        if (touch.x<100) {
-            //stop/start music
-            if (chunepaused){
-                chune.play();
-                chune.setPosition(chuneposition);
-            } else {
-                chuneposition=chune.getPosition();
-                chune.stop();
-            }
-            chunepaused=!chunepaused;
-            
-        } else if (touch.x<210) {
-            //open camera
-            
-            if((ofGetElapsedTimeMillis()-imagetime)>taptreshold){ //too avoid double tap on use button
-                
-                
-                //the camera without preview is not working well in new version. here are some alternatives of showing the camera, but no alternative is perfect
-                
-                
-                //what is the difference between 1 and 3? is openCamera not needed at all with showCameraOverlay?
-                //and why does the camera not react on lower part of screen?
-                
-                
-                /* xxxxxxxxxxxxxxx
-                 drawImage bör göras svart här eller hellre sätt flagga så att svart bild visas. kan man göra en draw här i touchup eller bara i draw? tror man kan här
-                 */
-                
-                
-                phototaken=false;
-                filtercountdown=3;
-                
-                
-                if (cameramode==0) {
-                    //open camera with preview
-                    camera->openCamera();
-                } else if (cameramode==1) {
-                    //open camera without preview
-                    camera->showCameraOverlay();
-                } else if (cameramode==2) {
-                    //open camera without preview, alt 2. 
-                    //camera->showCameraOverlay must be called in setup
-                    camera->openCamera();
-                } else if (cameramode==3) {
-                    //open camera without preview, alt 3. 
-                    camera->showCameraOverlay();
-                    camera->openCamera();
-                } else {
-                    //fallback
-                    camera->openCamera();
+    touchUpPoint.set(touch.x,touch.y);
+    if (touch.id==0) {
+        if (cassetteButton.inside(touchUpPoint)) {
+            touchUpButton=cassetteb;
+        } else if (cameraButton.inside(touchUpPoint)) {
+            touchUpButton=camerab;
+        } else if (settingsButton.inside(touchUpPoint)) {
+            touchUpButton=settingsb;
+        } else {
+            touchUpButton=unknownb;
+        }
+
+        //do most stuff here. test what happens with touch.id==1
+        if (touchUpButton==touchDownButton && isButtonDown && !hasBeenOut){
+            //touch down and up in same button, and has never left the button
+            if (touchUpButton==cassetteb) {
+                cout << "touch down+up in cassette area detected" << endl;
+                //toggle play
+                if (chunepaused){
+                    chune.play();
+                    chune.setPosition(chuneposition);
+               } else {
+                    chuneposition=chune.getPosition();
+                    chune.stop();
                 }
-                cout << "camera opened" << endl;
+                chunepaused=!chunepaused;
+            } else if (touchUpButton==camerab) {
+                //open camera
+                if((ofGetElapsedTimeMillis()-imagetime)>taptreshold){ //too avoid double tap on use button                    
+                    //the camera without preview is not working well in new version. here are some alternatives of showing the camera, but no alternative is perfect
+                    
+                    //what is the difference between 1 and 3? is openCamera not needed at all with showCameraOverlay?
+                    //and why does the camera not react on lower part of screen
+                    
+                    phototaken=false;
+                    filtercountdown=3;
+                    
+                    if (cameramode==0) {
+                        //open camera with preview
+                        camera->openCamera();
+                    } else if (cameramode==1) {
+                        //open camera without preview
+                        camera->showCameraOverlay();
+                    } else if (cameramode==2) {
+                        //open camera without preview, alt 2. 
+                        //camera->showCameraOverlay must be called in setup
+                        camera->openCamera();
+                    } else if (cameramode==3) {
+                        //open camera without preview, alt 3. 
+                        camera->showCameraOverlay();
+                        camera->openCamera();
+                    } else {
+                        //fallback
+                        camera->openCamera();
+                    }
+                    cout << "camera opened" << endl;
+                }
+                else {
+                    cout << "touch too soon, camera not opened. imagetime: " << imagetime << " millis: " << ofGetElapsedTimeMillis() << endl;
+                }
+
+            } else if (touchUpButton==settingsb) {
+                //do nothing yet
             }
-            else {
-                cout << "touch too soon, camera not opened. imagetime: " << imagetime << " millis: " << ofGetElapsedTimeMillis() << endl;
-            }
-        } 
+        }
+        isButtonDown=false;    
+        chune.setSpeed(1.0); //speed should always be set to 1.0 when no button is down
     }
+
+
+    
+    
+    
+//	if(touch.id == 0 && touch.y > ofGetHeight()- 70 && isButtonDown) {
+//        cout << "touch detected" << endl;
+//        if (touch.x<100) {
+//            //stop/start music
+//            if (chunepaused){
+//                chune.play();
+//                chune.setPosition(chuneposition);
+//            } else {
+//                chuneposition=chune.getPosition();
+//                chune.stop();
+//            }
+//            chunepaused=!chunepaused;
+//            
+//        } else if (touch.x<210) {
+//            //open camera
+//            
+//            if((ofGetElapsedTimeMillis()-imagetime)>taptreshold){ //too avoid double tap on use button
+//                
+//                
+//                //the camera without preview is not working well in new version. here are some alternatives of showing the camera, but no alternative is perfect
+//                
+//                
+//                //what is the difference between 1 and 3? is openCamera not needed at all with showCameraOverlay?
+//                //and why does the camera not react on lower part of screen?
+//                
+//                
+//                /* xxxxxxxxxxxxxxx
+//                 drawImage bör göras svart här eller hellre sätt flagga så att svart bild visas. kan man göra en draw här i touchup eller bara i draw? tror man kan här
+//                 */
+//                
+//                
+//                phototaken=false;
+//                filtercountdown=3;
+//                
+//                
+//                if (cameramode==0) {
+//                    //open camera with preview
+//                    camera->openCamera();
+//                } else if (cameramode==1) {
+//                    //open camera without preview
+//                    camera->showCameraOverlay();
+//                } else if (cameramode==2) {
+//                    //open camera without preview, alt 2. 
+//                    //camera->showCameraOverlay must be called in setup
+//                    camera->openCamera();
+//                } else if (cameramode==3) {
+//                    //open camera without preview, alt 3. 
+//                    camera->showCameraOverlay();
+//                    camera->openCamera();
+//                } else {
+//                    //fallback
+//                    camera->openCamera();
+//                }
+//                cout << "camera opened" << endl;
+//            }
+//            else {
+//                cout << "touch too soon, camera not opened. imagetime: " << imagetime << " millis: " << ofGetElapsedTimeMillis() << endl;
+//            }
+//        } 
+//    }
 
     
     
@@ -676,9 +802,7 @@ void testApp::touchUp(ofTouchEventArgs &touch){
 	{
 		filtertype = touch.y/20;
 		cout << filtertype;
-	}
-	isButtonDown = false;
-    
+	}    
 }
 
 
