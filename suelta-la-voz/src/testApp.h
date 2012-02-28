@@ -262,12 +262,15 @@ public:
 	ofImage buttonDown;
 	ofImage buttonUp;
 	bool isButtonDown;
+    int xDown;
+    int yDown;
 	
     static const int numberOfUploadThreads=8;
     threadedUpload tup[numberOfUploadThreads];
     
     //musicplayer
     ofSoundPlayer  chune;
+    //ofxOpenALSoundPlayer chune; //can play mp3 but not set speed
     bool chunepaused;
     float chuneposition;
     

@@ -24,6 +24,7 @@
 		5252B1B2141A45700077A748 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A3141A456F0077A748 /* ofxCvHaarFinder.cpp */; };
 		5252B1B3141A45700077A748 /* ofxCvImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A5141A456F0077A748 /* ofxCvImage.cpp */; };
 		5252B1B4141A45700077A748 /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A8141A456F0077A748 /* ofxCvShortImage.cpp */; };
+		525DDC9314FCB20C00A7DA9C /* suelta-la-voz_reverse.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 525DDC9214FCB20C00A7DA9C /* suelta-la-voz_reverse.mp3 */; };
 		526B479414D1588000D0B4A6 /* cassette-md-emptywheel.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */; };
 		526B479514D1588000D0B4A6 /* cassette-md.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478D14D1588000D0B4A6 /* cassette-md.png */; };
 		526B479614D1588000D0B4A6 /* hjul0.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478E14D1588000D0B4A6 /* hjul0.png */; };
@@ -173,6 +174,7 @@
 		5252B1A8141A456F0077A748 /* ofxCvShortImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCvShortImage.cpp; sourceTree = "<group>"; };
 		5252B1A9141A456F0077A748 /* ofxCvShortImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCvShortImage.h; sourceTree = "<group>"; };
 		5252B1AA141A456F0077A748 /* ofxOpenCv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOpenCv.h; sourceTree = "<group>"; };
+		525DDC9214FCB20C00A7DA9C /* suelta-la-voz_reverse.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "suelta-la-voz_reverse.mp3"; sourceTree = "<group>"; };
 		526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md-emptywheel.png"; path = "images/cassette-md-emptywheel.png"; sourceTree = "<group>"; };
 		526B478D14D1588000D0B4A6 /* cassette-md.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md.png"; path = "images/cassette-md.png"; sourceTree = "<group>"; };
 		526B478E14D1588000D0B4A6 /* hjul0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul0.png; path = images/hjul0.png; sourceTree = "<group>"; };
@@ -624,6 +626,7 @@
 		52CA22931496B2360067BAAB /* sounds */ = {
 			isa = PBXGroup;
 			children = (
+				525DDC9214FCB20C00A7DA9C /* suelta-la-voz_reverse.mp3 */,
 				526CDA7614C97856000D7923 /* suelta-la-voz.caf */,
 			);
 			path = sounds;
@@ -810,6 +813,7 @@
 				526B479B14D1588000D0B4A6 /* hjul50.png in Resources */,
 				5205AADB14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png in Resources */,
 				52DE72B414D2089300920880 /* instamatic3.png in Resources */,
+				525DDC9314FCB20C00A7DA9C /* suelta-la-voz_reverse.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

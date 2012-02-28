@@ -60,12 +60,13 @@ void testApp::setup(){
 
     
     
-    chune.loadSound("sounds/suelta-la-voz.caf");
+    chune.loadSound("sounds/suelta-la-voz_reverse.mp3");
 	chune.setVolume(1.0f);
 	chune.setMultiPlay(false);
-    //chune.play();    
     chunepaused=true;
     chuneposition=0;
+    
+    chuneposition=0.5;
     
 	buttonDown.loadImage("buttonDown.png");
 	buttonUp.loadImage("buttonDown.png");
@@ -191,19 +192,17 @@ void testApp::update()
                 cameraPixelsNoAlpha = new unsigned char [camera->width * camera->height*3];
             }
                     
-            int width=camera->width;
-            int height=camera->height;
-            
-            cout << "width: " << width << endl;
-            cout << "height: " << height << endl;
+                       
+            cout << "width: " << camera->width << endl;
+            cout << "height: " << camera->height << endl;
             cout << "window width: " << ofGetWidth() << endl;
             cout << "window height: " << ofGetHeight() << endl;
             drawImage.clear();
-            drawImage.allocate(width, height);
+            drawImage.allocate(camera->width, camera->height);
             
             unsigned long now=dis(0,"");        
             //delete alphachannel
-            for (int i=0,j=0;i<width*height*4;i+=4){
+            for (int i=0,j=0;i<camera->width*camera->height*4;i+=4){
                 memcpy(cameraPixelsNoAlpha+j,camera->pixels+i,3);
                 j+=3;
             }
@@ -213,39 +212,59 @@ void testApp::update()
             //to start with, for the filters to work with, we have the image drawImage of type ofxCvColorImage
             //and when we are ready we should have the filtered image back in drawImage (drawn) but
             //we also need the filtered image in uploadImage (uploaded)
+            //
+            //HOWTO CALL FILTER FUNCTIONS:
+            //There are two different ways. Calling with
+            //1. cameraPixelsNoAlpha or 
+            //2. uploadImage
+            //No 1 is called like this:
+            //
+            //     filterGlitch(cameraPixelsNoAlpha,camera->width,camera->height,senses);            
+            //     drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+            //     uploadImage=drawImage.getCvImage();
+            //
+            //No 2 is called like this:
+            //
+            //     drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+            //     uploadImage=drawImage.getCvImage();
+            //     filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+            //
+            //Note that the filter-function will alter uploadImage, and that this will also alter drawImage as intended in the second
+            //alternative. 
+            //
+            //Note also that there is a third alternative:
+            //applying more than one filter, possibly a combination of 1 and 2.
+            //
+            //some old notes on this:
+            /*            uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
+             filterFrameit(drawImage.getPixels() , drawImage.getWidth(), drawImage.getHeight(),-1);
+             uploadImage=drawImage.getCvImage(); //very very strange. if portrait mode, original and not filtered image copied to uploadImage
+             //but correct filtered image drawn by drawImage.draw. weird. maybe because of documented bug in getPixels ofxCVimage.cpp
+             //try getCvROIImage...
+             */          
+            //yes, this was the way to do it. 
+            //but must find a way to do it if appying two filters, one with pixels, one with iplimage...
+            //no problem if working with pixels before iplimage, but maybe problem if working with
+            //pixels after iplimage.  how to get pixels from iplimage??? answer: img->imageData
+
+            
+            now=dis(0,"");
             if (filtertype==0) {
                 //no filter
-                now=dis(0,"");
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                now=dis(now,"from cameraPixels to drawImage");
                 uploadImage=drawImage.getCvImage();
-                dis(now,"from drawImage to uploadImage");
             } else if (filtertype==1) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                //uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3); maybe this isn't needed???
-                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"from drawImage to uploadImage");
                 filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
-                now=dis(now,"filterCurves_2");
-                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
             } else if (filtertype==2) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"from drawImage to uploadImage");
                 filterCurves_hsv(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
-                now=dis(now,"filterCurves_hsv");
-                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
             } else if (filtertype==3) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"from drawImage to uploadImage");
                 filterVignette_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),-1);
-                now=dis(now,"filterVignette_2");
-                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
-
             } else if (filtertype==4) {
                 for(int i =0; i < 10;i++)
 				{
@@ -254,30 +273,14 @@ void testApp::update()
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
             } else if (filtertype==5) {
-    /*            uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
-                filterFrameit(drawImage.getPixels() , drawImage.getWidth(), drawImage.getHeight(),-1);
-                uploadImage=drawImage.getCvImage(); //very very strange. if portrait mode, original and not filtered image copied to uploadImage
-                //but correct filtered image drawn by drawImage.draw. weird. maybe because of documented bug in getPixels ofxCVimage.cpp
-                //try getCvROIImage...
-      */          
-                //new try
                 filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
-                //yes, this was the way to do it. 
-                //but must find a way to do it if appying two filters, one with pixels, one with iplimage...
-                //no problem if working with pixels before iplimage, but maybe problem if working with
-                //pixels after iplimage.  how to get pixels from iplimage??? answer: img->imageData
         
             } else if (filtertype==6) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                //uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3); maybe this isn't needed???
-                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"from drawImage to uploadImage");
                 filterCurves_crazy(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
-                now=dis(now,"filterCurves_crazy");
-                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended                            
             } else if (filtertype==7) {           
                 filterGlitch(cameraPixelsNoAlpha,camera->width,camera->height,senses);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
@@ -292,21 +295,26 @@ void testApp::update()
                 uploadImage=drawImage.getCvImage();
             } else if (filtertype==10) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                now=dis(0,"");
                 uploadImage=drawImage.getCvImage();
-                now=dis(now,"from drawImage to uploadImage");
                 filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
-                now=dis(now,"filterSmooth");
-                //Note the the function will alter uploadImage, and that this will also alter drawImage as intended            
             } else {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();            
             }            
-            
+            char* s = new char[50];
+            sprintf(s,"filtering time, filter %i: ",filtertype);
+            dis(now,s);
+
             camera->imageUpdated=false;
             phototaken=true;
-
             
+            
+            //to temporarily prevent upload:
+            //set numberOfUploadThreads=0 in testApp.h
+            //or simply say while(!success && i<0){  //numberOfUploadThreads){
+            //instead of
+            //while(!success && i<numberOfUploadThreads){
+
             //upload filtered photo
             int i=0;
             bool success=false;
@@ -552,6 +560,8 @@ void testApp::touchDown(ofTouchEventArgs &touch){
 	if(touch.id == 0 && touch.y > ofGetHeight()- 70)
 	{
 		isButtonDown = true;
+        xDown=touch.x;
+        yDown=touch.y;
 	}
 	
 	
@@ -560,12 +570,39 @@ void testApp::touchDown(ofTouchEventArgs &touch){
 
 //--------------------------------------------------------------
 void testApp::touchMoved(ofTouchEventArgs &touch){
-    //	if(touch.id == 1){
-    //	}		
+	/* from sound player example:
+    if( touch.id == 0 ){
+		// continuously control the speed of the beat sample via drag, 
+		// when in the "beat" region:
+		float widthStep = ofGetWidth() / 3.0f;
+		if (touch.x >= widthStep && touch.x < widthStep*2){
+			//beats.setSpeed( 0.5f + ((float)(ofGetHeight() - touch.y) / (float)ofGetHeight())*1.0f);
+            beats.setPosition(((float)(ofGetHeight() - touch.y) / (float)ofGetHeight())*1.0f);
+		} 
+	}
+     */
+    if (touch.id==0) {
+        
+        if (touch.x>100 && !chunepaused){
+            //cout << "touch Moved: " << touch.x << endl;
+            chune.setSpeed((touch.x-100)/10+1);
+            cout << chune.getSpeed() << endl;
+        }
+        else {
+            chune.setSpeed(1);
+        }
+    }
+    
+    
 }
 
 //--------------------------------------------------------------
-void testApp::touchUp(ofTouchEventArgs &touch){	
+void testApp::touchUp(ofTouchEventArgs &touch){
+    
+    
+    chune.setSpeed(1.0); //more logic here, but ok for now.
+    
+    
 	if(touch.id == 0 && touch.y > ofGetHeight()- 70 && isButtonDown) {
         cout << "touch detected" << endl;
         if (touch.x<100) {
