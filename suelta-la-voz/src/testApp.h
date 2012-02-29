@@ -265,9 +265,11 @@ public:
     threadedUpload tup[numberOfUploadThreads];
     
     //musicplayer
-    ofSoundPlayer  chune;
+    ofSoundPlayer chune;
+    ofSoundPlayer chuneReverse;
     //ofxOpenALSoundPlayer chune; //can play mp3 but not set speed
     bool chunepaused;
+    bool chuneReversepaused;
     float chuneposition;
     bool chuneWasPlaying;
     
@@ -288,13 +290,23 @@ public:
         settingsb  //3
     };
     
+    //don't react on touchDown, only on touchMove;
+    enum secondaryButtonNames {
+        unknownsb,
+        fastforwardsb,
+        reversesb
+    };
+    
     enum buttonNames touchDownButton;
     enum buttonNames touchUpButton;
-    enum buttonNames touchMovedButton;
+    enum secondaryButtonNames movedIntoButton;
+    
     
     ofRectangle cameraButton;
     ofRectangle cassetteButton;
     ofRectangle settingsButton;
+    ofRectangle fastforwardButton;
+    ofRectangle reverseButton;
     
     ofPoint touchDownPoint;
     ofPoint touchMovedPoint;

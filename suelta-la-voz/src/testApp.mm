@@ -21,9 +21,11 @@ void testApp::setup(){
     lasttick=0;
     
     //size and position of icons and buttons
-    cassetteButton.set(0*107,ofGetHeight()-67,107,67);
-    cameraButton.set(1*107,ofGetHeight()-67,107,67);
+    cassetteButton.set(1*107,ofGetHeight()-67,107,67);
+    cameraButton.set(0*107,ofGetHeight()-67,107,67);
     settingsButton.set(2*107,ofGetHeight()-67,107,67);
+    fastforwardButton.set(2*107,ofGetHeight()-67,107,67);
+    reverseButton.set(0*107,ofGetHeight()-67,107,67);
     
     
     
@@ -58,14 +60,14 @@ void testApp::setup(){
     result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);  
 
     
-    /*following code makes speaker sound out, even if headphones are connected which is not what I want
+    //following code makes speaker sound out, even if headphones are connected which is not what I want
     UInt32 audioRouteOverride = 'spkr';   
     AudioSessionSetProperty (         
                              'ovrd',  
                              sizeof (audioRouteOverride),  
                              &audioRouteOverride           
                              );  
-     */
+     
 
     
 
@@ -77,7 +79,12 @@ void testApp::setup(){
     chune.loadSound("sounds/suelta-la-voz.caf");
 	chune.setVolume(1.0f);
 	chune.setMultiPlay(false);
+    chuneReverse.loadSound("sounds/suelta-la-voz_reverse.caf");
+	chuneReverse.setVolume(1.0f);
+	chuneReverse.setMultiPlay(false);
+
     chunepaused=true;
+    chuneReversepaused=true;
     chuneWasPlaying=false;
     chuneposition=0;
     
@@ -389,7 +396,7 @@ void testApp::update()
 
     
     char * s = new char[100];
-    sprintf(s,"chunepaused: %d, chuneWasPlaying: %d",chunepaused,chuneWasPlaying); 
+    sprintf(s,"chunepaused: %d, chuneWasPlaying: %d, playspeed: %2.1f",chunepaused,chuneWasPlaying,chune.getSpeed()); 
     lasttick=tick(lasttick,s);
 	
 }
@@ -432,8 +439,9 @@ void testApp::draw() {
     }
 
     if (!chunepaused && !chune.getIsPlaying()) {
-        cout << "end of chune reached. " << chune.getPosition() << " " << chune.getPosition()-1 << endl;
+        cout << "end of chune reached. " << chune.getPosition() << endl;
         chunepaused=true;
+        chuneWasPlaying=true; //to prevent chune from restarting if touchMoved in fastforward area after end is reached
         chuneposition=0;
     }
 
@@ -569,6 +577,24 @@ void testApp::exit() {
 }
 
 
+
+/*
+touchdown är straightforward. kolla egenetligen bara var man klickar, och om man 
+klickar i kassett så kolla även om den spelar eller inte
+ 
+touchup är hyfsat straightforward. gör det mesta om man gör touchup i samma som touchdown och inte varit utanför
+men: måste även göra lite bookkeeping om man varit utanför. Vad?
+man kan alltid sätta speed till 1
+ok, där där jag sätter speed till 1 skulle jag också behöva stoppa spelaren om den är i fastforward
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ */
+
 //--------------------------------------------------------------
 void testApp::touchDown(ofTouchEventArgs &touch){
 	touchDownPoint.set(touch.x,touch.y);
@@ -599,43 +625,90 @@ void testApp::touchDown(ofTouchEventArgs &touch){
 void testApp::touchMoved(ofTouchEventArgs &touch){
     touchMovedPoint.set(touch.x,touch.y);
     if (touch.id==0) {
-        //if touch down in cassette, and chune playing, and moved to the right: just change speed
-        //if touch down in cassette, and chune not playing, start tune, and also change speed
-        //also, remember that we have been out of button
-        if (cassetteButton.inside(touchMovedPoint)) {
-            touchMovedButton=cassetteb;
-        } else if (cameraButton.inside(touchMovedPoint)) {
-            touchMovedButton=camerab;
-        } else if (settingsButton.inside(touchMovedPoint)) {
-            touchMovedButton=settingsb;
-        } else {
-            touchMovedButton=unknownb;
-        }
-        if (touchMovedButton!=touchDownButton) {
+        //first some general stuff for all buttons, checking how we have moved
+        if ((touchDownButton==cassetteb && !cassetteButton.inside(touchMovedPoint)) ||
+            (touchDownButton==camerab   && !cameraButton.inside(touchMovedPoint)) ||
+            (touchDownButton==settingsb && !settingsButton.inside(touchMovedPoint))) {
             hasBeenOut=true;
         }
-        if (touchDownButton==cassetteb && hasBeenOut) {
-            if (touchMovedPoint.x>(cassetteButton.x+cassetteButton.width)) {
-                chune.setSpeed((touchMovedPoint.x-(cassetteButton.x+cassetteButton.width))/10+1);
-                cout << chune.getSpeed() << endl;
-                if (chunepaused) {
+
+        if (fastforwardButton.inside(touchMovedPoint)) {
+            movedIntoButton=fastforwardsb;
+        } else if (reverseButton.inside(touchMovedPoint)) {
+            movedIntoButton=reversesb;
+        } else {
+            movedIntoButton=unknownsb;
+        }
+        
+        //then some specific actions depending on the moves.
+        
+
+        if (touchDownButton==cassetteb) {
+            if (movedIntoButton==fastforwardsb) {
+                float newSpeed=(touchMovedPoint.x-fastforwardButton.x)/10+1;
+                chune.setSpeed(newSpeed);
+                if (chunepaused && !chuneWasPlaying){
+                    cout << "chune started by a move" << endl;
                     chune.play();
                     chune.setPosition(chuneposition);
                     chunepaused=false;
                 }
-            } else { //here should be an if else to the left of button and then setSpeed(1)
-                cout << "logial error no more???" << endl; 
-                if (!chuneWasPlaying) {
-                    cout<< "more logical error no more???" << endl;
+            } else if (movedIntoButton==reversesb) {
+                //set speed negative does not work, will have to play reverse version instead :(
+                float newSpeed=2; //shall vary like fastforward later
+                chuneReverse.setSpeed(newSpeed);
+                if (chuneReversepaused && !chuneWasPlaying){
+                    cout << "chuneReverse started by a move" << endl;
+                    chuneReverse.play();
+                    chuneReverse.setPosition(1-chuneposition);
+                    chuneReversepaused=false;
+                }
+            } else {
+                if (!chunepaused && !chuneWasPlaying) {
+                    //chune was started by a move and must be stopped when  
+                    //out of fastforward but also on touch up!
+                    cout << "chune was stopped by a move" << endl;
                     chuneposition=chune.getPosition();
                     chune.stop();
                     chunepaused=true;
-                } else {
-                    chune.setSpeed(1);
                 }
+                if (!chuneReversepaused && !chuneWasPlaying) {
+                    cout << "chuneReverse was stopped by a move" << endl;
+                    chuneposition=1-chuneReverse.getPosition();
+                    chuneReverse.stop();
+                    chuneReversepaused=true;
+                }
+                chune.setSpeed(1.0);
+                chuneReverse.setSpeed(1.0);
             }
-
         }
+        
+        //have to start the tune here if it wasn't playing. and stopped both here and in touchup I guess
+        
+        
+//        if (touchDownButton==cassetteb && hasBeenOut) {
+// xxx här ska jag ändra till att kolla om jag är inside secondary button
+//            if (touchMovedPoint.x>(cassetteButton.x+cassetteButton.width)) {
+//                chune.setSpeed((touchMovedPoint.x-(cassetteButton.x+cassetteButton.width))/10+1);
+//                cout << chune.getSpeed() << endl;
+//                if (chunepaused) {
+//                    chune.play();
+//                    chune.setPosition(chuneposition);
+//                    chunepaused=false;
+//                }
+//            } else { //here should be an if else to the left of button and then setSpeed(1)
+//                cout << "logial error no more???" << endl; 
+//                if (!chuneWasPlaying) {
+//                    cout<< "more logical error no more???" << endl;
+//                    chuneposition=chune.getPosition();
+//                    chune.stop();
+//                    chunepaused=true;
+//                } else {
+//                    chune.setSpeed(1);
+//                }
+//            }
+//
+//        }
     }
     
     
@@ -667,12 +740,17 @@ void testApp::touchUp(ofTouchEventArgs &touch){
         } else {
             touchUpButton=unknownb;
         }
+        
+        
+        //ok, we should look for basically three alternatives:
+        //1: touchdown and up in same button without having been out
+        //2: touchdown and up in same button, having been out
+        //3: touchdown in one button, touchup in another button
 
-        //do most stuff here. test what happens with touch.id==1
         if (touchUpButton==touchDownButton && isButtonDown && !hasBeenOut){
-            //touch down and up in same button, and has never left the button
+            //1: touchdown and up in same button without having been out
             if (touchUpButton==cassetteb) {
-                cout << "touch down+up in cassette area detected" << endl;
+                cout << "touch down+up in cassette area detected. toggle play." << endl;
                 //toggle play
                 if (chunepaused){
                     chune.play();
@@ -721,79 +799,34 @@ void testApp::touchUp(ofTouchEventArgs &touch){
                 //do nothing yet
             }
         }
+ 
+        if (touchUpButton==touchDownButton && isButtonDown && hasBeenOut){
+            //2: touchdown and up in same button, having been out
+            //nothing has to be done here at the moment
+        }
+        if (touchUpButton!=touchDownButton && isButtonDown){
+            //3: touchdown in one button, touchup in another button
+            if (touchDownButton==cassetteb && !chunepaused && !chuneWasPlaying) {
+                //chune was started by a move and must be stopped when  
+                //out of fastforward but also on touch up!
+                chuneposition=chune.getPosition();
+                cout << "chune was stopped by touchMove followed by touchUp" << endl;
+                chune.stop();
+                chunepaused=true;
+            }
+            if (touchDownButton==cassetteb && !chuneReversepaused && !chuneWasPlaying) {
+                chuneposition=1-chuneReverse.getPosition();
+                cout << "chuneReverse was stopped by touchMove followed by touchUp" << endl;
+                chuneReverse.stop();
+                chuneReversepaused=true;
+            }
+        }
+        
+        
         isButtonDown=false;    
         chune.setSpeed(1.0); //speed should always be set to 1.0 when no button is down
     }
 
-
-    
-    
-    
-//	if(touch.id == 0 && touch.y > ofGetHeight()- 70 && isButtonDown) {
-//        cout << "touch detected" << endl;
-//        if (touch.x<100) {
-//            //stop/start music
-//            if (chunepaused){
-//                chune.play();
-//                chune.setPosition(chuneposition);
-//            } else {
-//                chuneposition=chune.getPosition();
-//                chune.stop();
-//            }
-//            chunepaused=!chunepaused;
-//            
-//        } else if (touch.x<210) {
-//            //open camera
-//            
-//            if((ofGetElapsedTimeMillis()-imagetime)>taptreshold){ //too avoid double tap on use button
-//                
-//                
-//                //the camera without preview is not working well in new version. here are some alternatives of showing the camera, but no alternative is perfect
-//                
-//                
-//                //what is the difference between 1 and 3? is openCamera not needed at all with showCameraOverlay?
-//                //and why does the camera not react on lower part of screen?
-//                
-//                
-//                /* xxxxxxxxxxxxxxx
-//                 drawImage bör göras svart här eller hellre sätt flagga så att svart bild visas. kan man göra en draw här i touchup eller bara i draw? tror man kan här
-//                 */
-//                
-//                
-//                phototaken=false;
-//                filtercountdown=3;
-//                
-//                
-//                if (cameramode==0) {
-//                    //open camera with preview
-//                    camera->openCamera();
-//                } else if (cameramode==1) {
-//                    //open camera without preview
-//                    camera->showCameraOverlay();
-//                } else if (cameramode==2) {
-//                    //open camera without preview, alt 2. 
-//                    //camera->showCameraOverlay must be called in setup
-//                    camera->openCamera();
-//                } else if (cameramode==3) {
-//                    //open camera without preview, alt 3. 
-//                    camera->showCameraOverlay();
-//                    camera->openCamera();
-//                } else {
-//                    //fallback
-//                    camera->openCamera();
-//                }
-//                cout << "camera opened" << endl;
-//            }
-//            else {
-//                cout << "touch too soon, camera not opened. imagetime: " << imagetime << " millis: " << ofGetElapsedTimeMillis() << endl;
-//            }
-//        } 
-//    }
-
-    
-    
-    
-    
 	if(touch.id == 1)
 	{
 		showDebug = !showDebug;	
