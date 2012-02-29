@@ -41,6 +41,13 @@
 		52DE72B414D2089300920880 /* instamatic3.png in Resources */ = {isa = PBXBuildFile; fileRef = 52DE72B314D2089300920880 /* instamatic3.png */; };
 		52E9CA59141DF4A700CFFB5A /* senseMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52E9CA57141DF4A700CFFB5A /* senseMaker.cpp */; };
 		52E9CA5C141DF57700CFFB5A /* filters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52E9CA5A141DF57700CFFB5A /* filters.cpp */; };
+		52FCEBE214FED63D007EF2F2 /* hjul10-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */; };
+		52FCEBE314FED63D007EF2F2 /* hjul20-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDC14FED63D007EF2F2 /* hjul20-14x14.png */; };
+		52FCEBE414FED63D007EF2F2 /* hjul30-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDD14FED63D007EF2F2 /* hjul30-14x14.png */; };
+		52FCEBE514FED63D007EF2F2 /* hjul40-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDE14FED63D007EF2F2 /* hjul40-14x14.png */; };
+		52FCEBE614FED63D007EF2F2 /* hjul50-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDF14FED63D007EF2F2 /* hjul50-14x14.png */; };
+		52FCEBE714FED63D007EF2F2 /* hjul00-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBE014FED63D007EF2F2 /* hjul00-14x14.png */; };
+		52FCEBE814FED63D007EF2F2 /* cassette-noalpha-107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBE114FED63D007EF2F2 /* cassette-noalpha-107x69.png */; };
 		5326AEA810A23A0500278DE6 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5326AEA710A23A0500278DE6 /* CoreLocation.framework */; };
 		53F323EB10A20EDB00E0DAE4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */; };
 		78f10b3f368cef249f7add2bd3f90b52 /* instructions.png in Resources */ = {isa = PBXBuildFile; fileRef = 1b3571ff319e8543357863c58d3b6387 /* instructions.png */; };
@@ -207,6 +214,13 @@
 		52E9CA58141DF4A700CFFB5A /* senseMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = senseMaker.h; sourceTree = "<group>"; };
 		52E9CA5A141DF57700CFFB5A /* filters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filters.cpp; sourceTree = "<group>"; };
 		52E9CA5B141DF57700CFFB5A /* filters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filters.h; sourceTree = "<group>"; };
+		52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul10-14x14.png"; path = "images/hjul10-14x14.png"; sourceTree = "<group>"; };
+		52FCEBDC14FED63D007EF2F2 /* hjul20-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul20-14x14.png"; path = "images/hjul20-14x14.png"; sourceTree = "<group>"; };
+		52FCEBDD14FED63D007EF2F2 /* hjul30-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul30-14x14.png"; path = "images/hjul30-14x14.png"; sourceTree = "<group>"; };
+		52FCEBDE14FED63D007EF2F2 /* hjul40-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul40-14x14.png"; path = "images/hjul40-14x14.png"; sourceTree = "<group>"; };
+		52FCEBDF14FED63D007EF2F2 /* hjul50-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul50-14x14.png"; path = "images/hjul50-14x14.png"; sourceTree = "<group>"; };
+		52FCEBE014FED63D007EF2F2 /* hjul00-14x14.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "hjul00-14x14.png"; path = "images/hjul00-14x14.png"; sourceTree = "<group>"; };
+		52FCEBE114FED63D007EF2F2 /* cassette-noalpha-107x69.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-noalpha-107x69.png"; path = "images/cassette-noalpha-107x69.png"; sourceTree = "<group>"; };
 		5326AEA710A23A0500278DE6 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		BB16EBD10F2B2A9500518274 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -631,6 +645,13 @@
 		93d9338a1a5aa1694c40f299d4c6e4ea /* images */ = {
 			isa = PBXGroup;
 			children = (
+				52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */,
+				52FCEBDC14FED63D007EF2F2 /* hjul20-14x14.png */,
+				52FCEBDD14FED63D007EF2F2 /* hjul30-14x14.png */,
+				52FCEBDE14FED63D007EF2F2 /* hjul40-14x14.png */,
+				52FCEBDF14FED63D007EF2F2 /* hjul50-14x14.png */,
+				52FCEBE014FED63D007EF2F2 /* hjul00-14x14.png */,
+				52FCEBE114FED63D007EF2F2 /* cassette-noalpha-107x69.png */,
 				52DE72B314D2089300920880 /* instamatic3.png */,
 				5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */,
 				526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */,
@@ -806,6 +827,13 @@
 				5205AADB14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png in Resources */,
 				52DE72B414D2089300920880 /* instamatic3.png in Resources */,
 				522AFA0714FD976B00CC19AF /* suelta-la-voz_reverse.caf in Resources */,
+				52FCEBE214FED63D007EF2F2 /* hjul10-14x14.png in Resources */,
+				52FCEBE314FED63D007EF2F2 /* hjul20-14x14.png in Resources */,
+				52FCEBE414FED63D007EF2F2 /* hjul30-14x14.png in Resources */,
+				52FCEBE514FED63D007EF2F2 /* hjul40-14x14.png in Resources */,
+				52FCEBE614FED63D007EF2F2 /* hjul50-14x14.png in Resources */,
+				52FCEBE714FED63D007EF2F2 /* hjul00-14x14.png in Resources */,
+				52FCEBE814FED63D007EF2F2 /* cassette-noalpha-107x69.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,6 +3,7 @@
 
 int threadedUpload::count=0;
 
+char * tickstring = new char[100];
 int tick(int last, char * s) {
     int now=ofGetElapsedTimeMillis();
     if (now>(last+1000)) {
@@ -30,13 +31,23 @@ void testApp::setup(){
     
     
     //cassette animation
-    wheel[0].loadImage("images/hjul0.png");
-    wheel[1].loadImage("images/hjul10.png");
-    wheel[2].loadImage("images/hjul20.png");
-    wheel[3].loadImage("images/hjul30.png");
-    wheel[4].loadImage("images/hjul40.png");
-    wheel[5].loadImage("images/hjul50.png");
-    cassette.loadImage("images/cassette-md-emptywheel-noalpha.png");
+    wheelOld[0].loadImage("images/hjul0.png");
+    wheelOld[1].loadImage("images/hjul10.png");
+    wheelOld[2].loadImage("images/hjul20.png");
+    wheelOld[3].loadImage("images/hjul30.png");
+    wheelOld[4].loadImage("images/hjul40.png");
+    wheelOld[5].loadImage("images/hjul50.png");
+    cassetteOld.loadImage("images/cassette-md-emptywheel-noalpha.png");
+
+    wheel[0].loadImage("images/hjul00-14x14.png");
+    wheel[1].loadImage("images/hjul10-14x14.png");
+    wheel[2].loadImage("images/hjul20-14x14.png");
+    wheel[3].loadImage("images/hjul30-14x14.png");
+    wheel[4].loadImage("images/hjul40-14x14.png");
+    wheel[5].loadImage("images/hjul50-14x14.png");
+    cassette.loadImage("images/cassette-noalpha-107x69.png");
+
+    
     wi=0;
     angle=0;
     
@@ -84,8 +95,6 @@ void testApp::setup(){
     chuneReversepaused=true;
     chuneWasPlaying=false;
     chuneposition=0;
-    
-    chuneposition=0.5;
     
 	isButtonDown = false;
 		
@@ -394,9 +403,7 @@ void testApp::update()
 	
 
     
-    char * s = new char[100];
-    sprintf(s,"chunepaused: %d, chuneWasPlaying: %d, playspeed: %2.1f",chunepaused,chuneWasPlaying,chune.getSpeed()); 
-    //lasttick=tick(lasttick,s);
+    lasttick=tick(lasttick,tickstring);
 	
 }
 
@@ -433,7 +440,9 @@ void testApp::draw() {
             drawHeight=drawImage.height*drawWidth/drawImage.width;
             drawImage.draw(0, 0,drawWidth,drawHeight);            
         }
-        
+    
+        sprintf(tickstring,"drawHeight: %4.1f, drawWidth: %4.1f, ofGetwidth: %i, ofGetHeight: %i, imagewidth: %d, imageheight: %d",drawHeight,drawWidth,ofGetWidth(),ofGetHeight(),drawImage.width,drawImage.height); 
+
 
     }
 
@@ -453,7 +462,7 @@ void testApp::draw() {
     //but seems like instamatic drawn in center instead. doesn't really matter. 
     // (320/3=106,7)
     
-    float scale=0.35;
+    float scale=1; //0.35;
     int cx=cassetteButton.x;
     int cy=cassetteButton.y;
     
@@ -488,6 +497,9 @@ void testApp::draw() {
 
     ofSetColor(200,200,200);
     drawCassette(cx,cy,scale,progress,wi);
+    
+    drawCassetteOld(cx,cy-100,0.35,progress,wi);
+    
     
     //draw instamatic icon
     scale=0.7;
@@ -1044,10 +1056,34 @@ void testApp::consoleplot(float x,float max,char c){
 
 
 void testApp::drawCassette(int cx,int cy,float scale,float progress,int wi){
+//delete scale soon
     ofPushStyle();
-    float cw=cassette.getWidth()*scale;
-    float ch=cassette.getHeight()*scale;
+    float cw=cassette.getWidth();
+    float ch=cassette.getHeight();
     cassette.draw(cx,cy,cw,ch);
+ 
+    scale=0.35;
+    //this is the window where the tape shall grow and shrink
+    ofSetColor(139,69,19); //brown tape
+    //this brown tape could be inte cassette png
+    ofRect(cx+113*scale,cy+68*scale,70*scale,38*scale);
+    ofSetColor(255,255,255);
+    
+    ofRect(cx+113*scale+5*scale+50*scale-50*progress*scale,cy+68*scale,10*scale,38*scale);
+    
+    wheel[wi].draw(cx+65*scale,cy+68*scale,wheel[wi].getWidth(),wheel[wi].getHeight());
+    wheel[wi].draw(cx+cassette.getWidth()-107*scale,cy+68*scale,wheel[wi].getWidth(),wheel[wi].getHeight());
+    
+    ofPopStyle();
+    
+}
+
+
+void testApp::drawCassetteOld(int cx,int cy,float scale,float progress,int wi){
+    ofPushStyle();
+    float cw=cassetteOld.getWidth()*scale;
+    float ch=cassetteOld.getHeight()*scale;
+    cassetteOld.draw(cx,cy,cw,ch);
     
     //this is the window where the tape shall grow and shrink
     ofSetColor(139,69,19); //brown tape
@@ -1057,9 +1093,12 @@ void testApp::drawCassette(int cx,int cy,float scale,float progress,int wi){
 
     ofRect(cx+113*scale+5*scale+50*scale-50*progress*scale,cy+68*scale,10*scale,38*scale);
     
-    wheel[wi].draw(cx+65*scale,cy+68*scale,wheel[wi].getWidth()*scale,wheel[wi].getHeight()*scale);
-    wheel[wi].draw(cx+cassette.getWidth()*scale-107*scale,cy+68*scale,wheel[wi].getWidth()*scale,wheel[wi].getHeight()*scale);
+    wheelOld[wi].draw(cx+65*scale,cy+68*scale,wheelOld[wi].getWidth()*scale,wheelOld[wi].getHeight()*scale);
+    wheelOld[wi].draw(cx+cassetteOld.getWidth()*scale-107*scale,cy+68*scale,wheelOld[wi].getWidth()*scale,wheelOld[wi].getHeight()*scale);
 
     ofPopStyle();
 
 }
+
+
+

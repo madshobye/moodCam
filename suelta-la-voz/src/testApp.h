@@ -203,6 +203,7 @@ public:
 	void drawDebug();
 	
     void drawCassette(int cx,int cy,float scale,float progress,int wi);
+    void drawCassetteOld(int cx,int cy,float scale,float progress,int wi);
     
 
     
@@ -319,6 +320,8 @@ public:
     float angle;
     ofImage wheel[6];
     ofImage cassette;
+    ofImage wheelOld[6];
+    ofImage cassetteOld;
     
     float tabortscale;
     float tabortgrow;
