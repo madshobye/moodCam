@@ -61,17 +61,14 @@ void testApp::setup(){
 
     
     //following code makes speaker sound out, even if headphones are connected which is not what I want
-    UInt32 audioRouteOverride = 'spkr';   
-    AudioSessionSetProperty (         
-                             'ovrd',  
-                             sizeof (audioRouteOverride),  
-                             &audioRouteOverride           
-                             );  
+//    UInt32 audioRouteOverride = 'spkr';   
+//    AudioSessionSetProperty (         
+//                             'ovrd',  
+//                             sizeof (audioRouteOverride),  
+//                             &audioRouteOverride           
+//                             );  
      
 
-    
-
-    
     AudioSessionSetActive(YES);
 
     
@@ -87,6 +84,8 @@ void testApp::setup(){
     chuneReversepaused=true;
     chuneWasPlaying=false;
     chuneposition=0;
+    
+    chuneposition=0.5;
     
 	isButtonDown = false;
 		
@@ -397,7 +396,7 @@ void testApp::update()
     
     char * s = new char[100];
     sprintf(s,"chunepaused: %d, chuneWasPlaying: %d, playspeed: %2.1f",chunepaused,chuneWasPlaying,chune.getSpeed()); 
-    lasttick=tick(lasttick,s);
+    //lasttick=tick(lasttick,s);
 	
 }
 
@@ -455,15 +454,36 @@ void testApp::draw() {
     // (320/3=106,7)
     
     float scale=0.35;
-    int cx=0;
-    int cy=ofGetHeight()-cassette.getHeight()*scale;
+    int cx=cassetteButton.x;
+    int cy=cassetteButton.y;
     
-    float progress=chune.getPosition();
-    if (chunepaused) {
+    float progress;
+    if (chune.getIsPlaying()) {
+        progress=chune.getPosition();
+        wi++;
+        if (wi>5){ 
+            wi=0;
+        }
+        if (chune.getSpeed()>1.5) {
+            wi++;
+            if (wi>5){ 
+                wi=0;
+            }
+        }
+    } else if (chuneReverse.getIsPlaying()) {
+        progress=1-chuneReverse.getPosition();
+        wi--;
+        if (wi<0){ 
+            wi=5;
+        }
+        if (chuneReverse.getSpeed()>1.5) {
+            wi--;
+            if (wi<0){ 
+                wi=5;
+            }
+        }
+    } else {
         progress=chuneposition;
-    }
-    if (!chunepaused) {
-        wi++;if (wi>5) wi=0;
     }
 
     ofSetColor(200,200,200);
@@ -472,7 +492,7 @@ void testApp::draw() {
     //draw instamatic icon
     scale=0.7;
 
-    instaicon.draw(ofGetWidth()/2-instaicon.getWidth()/2*scale,ofGetHeight()-instaicon.getHeight()*scale,instaicon.getWidth()*scale,instaicon.getHeight()*scale);
+    instaicon.draw(cameraButton.x,cameraButton.y,instaicon.getWidth()*scale,instaicon.getHeight()*scale);
 
     
     //draw rectangle (to be substituted with something useful
@@ -480,11 +500,13 @@ void testApp::draw() {
     
     //temporary progress indicator
     //if chune.stop() is called, chune.getPostion() returns 1 but if chune reaches end and stops, chune.getPosition() returns 0
+    ofPushStyle();
     char* s = new char[30];
     sprintf(s, "%.3f %.2f", chune.getPosition(),chuneposition); 
-    ofPushStyle();
     ofSetColor(0,0,255);
 	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-30);
+    sprintf(s, "%.3f", 1-chuneReverse.getPosition()); 
+	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-15);    
     ofPopStyle();
 
     
@@ -655,14 +677,34 @@ void testApp::touchMoved(ofTouchEventArgs &touch){
                 }
             } else if (movedIntoButton==reversesb) {
                 //set speed negative does not work, will have to play reverse version instead :(
-                float newSpeed=2; //shall vary like fastforward later
+
+                //must stop chune if it is playing and chuneReverse is started
+                if (chuneWasPlaying && !chunepaused) {
+                    chuneposition=chune.getPosition();
+                    chune.stop();
+                    chunepaused=true;
+                }
+                
+                float newSpeed=(reverseButton.x+reverseButton.width-touchMovedPoint.x)/10+1; 
                 chuneReverse.setSpeed(newSpeed);
-                if (chuneReversepaused && !chuneWasPlaying){
-                    cout << "chuneReverse started by a move" << endl;
+                cout << newSpeed << endl;
+                //xxx: the following two if statements could be one, without chuneWasPlaying 
+                if (chuneReversepaused && chuneWasPlaying){
+                    cout << "chuneReverse started by a move, chune was already playing (chune temporarily stopped)" << endl;
                     chuneReverse.play();
                     chuneReverse.setPosition(1-chuneposition);
                     chuneReversepaused=false;
                 }
+
+                if (chuneReversepaused && !chuneWasPlaying){
+                    cout << "chuneReverse started by a move" << endl;
+                    chuneReverse.play();
+                    chuneReverse.setPosition(1.0-chuneposition);
+                    chuneReversepaused=false;
+                }
+                
+                
+                
             } else {
                 if (!chunepaused && !chuneWasPlaying) {
                     //chune was started by a move and must be stopped when  
@@ -674,10 +716,33 @@ void testApp::touchMoved(ofTouchEventArgs &touch){
                 }
                 if (!chuneReversepaused && !chuneWasPlaying) {
                     cout << "chuneReverse was stopped by a move" << endl;
-                    chuneposition=1-chuneReverse.getPosition();
+                    if (chuneReverse.getIsPlaying()) {
+                        chuneposition=1.0-chuneReverse.getPosition();
+                    } else {
+                        //chuneReverse has reached end (ie beginning!)
+                        chuneposition=0;
+                    }
                     chuneReverse.stop();
                     chuneReversepaused=true;
                 }
+                if (!chuneReversepaused && chuneWasPlaying) {
+                    cout << "chuneReverse was stopped by a move, chune resumed" << endl;
+                    if (chuneReverse.getIsPlaying()) {
+                        chuneposition=1.0-chuneReverse.getPosition();
+                    } else {
+                        //chuneReverse has reached end (ie beginning!)
+                        chuneposition=0;
+                    }
+                    chuneReverse.stop();
+                    chuneReversepaused=true;
+                    //for some weird reason, chune.setPosition does not seem to work if it is done immediately 
+                    //after chunereverse is stopped, so I add a short pause
+                    ofSleepMillis(10); 
+                    chune.play();
+                    chune.setPosition(chuneposition);                    
+                    chunepaused=false;        
+                }
+                
                 chune.setSpeed(1.0);
                 chuneReverse.setSpeed(1.0);
             }
@@ -686,29 +751,6 @@ void testApp::touchMoved(ofTouchEventArgs &touch){
         //have to start the tune here if it wasn't playing. and stopped both here and in touchup I guess
         
         
-//        if (touchDownButton==cassetteb && hasBeenOut) {
-// xxx här ska jag ändra till att kolla om jag är inside secondary button
-//            if (touchMovedPoint.x>(cassetteButton.x+cassetteButton.width)) {
-//                chune.setSpeed((touchMovedPoint.x-(cassetteButton.x+cassetteButton.width))/10+1);
-//                cout << chune.getSpeed() << endl;
-//                if (chunepaused) {
-//                    chune.play();
-//                    chune.setPosition(chuneposition);
-//                    chunepaused=false;
-//                }
-//            } else { //here should be an if else to the left of button and then setSpeed(1)
-//                cout << "logial error no more???" << endl; 
-//                if (!chuneWasPlaying) {
-//                    cout<< "more logical error no more???" << endl;
-//                    chuneposition=chune.getPosition();
-//                    chune.stop();
-//                    chunepaused=true;
-//                } else {
-//                    chune.setSpeed(1);
-//                }
-//            }
-//
-//        }
     }
     
     
@@ -815,14 +857,36 @@ void testApp::touchUp(ofTouchEventArgs &touch){
                 chunepaused=true;
             }
             if (touchDownButton==cassetteb && !chuneReversepaused && !chuneWasPlaying) {
-                chuneposition=1-chuneReverse.getPosition();
+                if (chuneReverse.getIsPlaying()) {
+                    chuneposition=1.0-chuneReverse.getPosition();
+                } else {
+                    //chuneReverse has reached end (ie beginning!)
+                    chuneposition=0;
+                }
                 cout << "chuneReverse was stopped by touchMove followed by touchUp" << endl;
                 chuneReverse.stop();
                 chuneReversepaused=true;
             }
+            if (touchDownButton==cassetteb && !chuneReversepaused && chuneWasPlaying) {
+                cout << "chuneReverse was stopped touchMove followed by touchUp, chune resumed" << endl;
+                if (chuneReverse.getIsPlaying()) {
+                    chuneposition=1.0-chuneReverse.getPosition();
+                } else {
+                    //chuneReverse has reached end (ie beginning!)
+                    chuneposition=0;
+                }
+                chuneReverse.stop();
+                chuneReversepaused=true;
+                //for some weird reason, chune.setPosition does not seem to work if it is done immediately 
+                //after chunereverse is stopped, so I add a short pause
+                ofSleepMillis(10); 
+                chune.play();
+                chune.setPosition(chuneposition);                    
+                chunepaused=false;        
+            }
         }
         
-        
+ //xxx this should work now, but I haven't tested what happens when end of chune is reached during reverse       
         isButtonDown=false;    
         chune.setSpeed(1.0); //speed should always be set to 1.0 when no button is down
     }
@@ -843,7 +907,7 @@ void testApp::touchUp(ofTouchEventArgs &touch){
 //--------------------------------------------------------------
 void testApp::touchDoubleTap(ofTouchEventArgs &touch){
     
-    
+    cout << "double tap, touch.id: " << touch.id << endl;    
 // can't get takePicture taking pictures. 
 //    camera->takePicture();
 //    camera->imageUpdated=true;
