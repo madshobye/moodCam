@@ -30,15 +30,7 @@ void testApp::setup(){
     
     
     
-    //cassette animation
-    wheelOld[0].loadImage("images/hjul0.png");
-    wheelOld[1].loadImage("images/hjul10.png");
-    wheelOld[2].loadImage("images/hjul20.png");
-    wheelOld[3].loadImage("images/hjul30.png");
-    wheelOld[4].loadImage("images/hjul40.png");
-    wheelOld[5].loadImage("images/hjul50.png");
-    cassetteOld.loadImage("images/cassette-md-emptywheel-noalpha.png");
-
+    //images for cassette animation
     wheel[0].loadImage("images/hjul00-14x14.png");
     wheel[1].loadImage("images/hjul10-14x14.png");
     wheel[2].loadImage("images/hjul20-14x14.png");
@@ -46,12 +38,10 @@ void testApp::setup(){
     wheel[4].loadImage("images/hjul40-14x14.png");
     wheel[5].loadImage("images/hjul50-14x14.png");
     cassette.loadImage("images/cassette-noalpha-107x69.png");
-
-    
     wi=0;
-    angle=0;
+   
     
-    instaicon.loadImage("images/instamatic3.png");
+    instaicon.loadImage("images/instamatic-noalpha-107x69.png");
     
         
     
@@ -301,8 +291,7 @@ void testApp::update()
             } else if (filtertype==5) {
                 filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
-                uploadImage=drawImage.getCvImage();
-        
+                uploadImage=drawImage.getCvImage();        
             } else if (filtertype==6) {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
@@ -323,6 +312,50 @@ void testApp::update()
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
                 filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
+            } else if (filtertype==11) {
+                //test, applying more than one filter, alt 1 followed by 2
+                //alt 1 filter
+                filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+
+                //alt 2 filter
+                filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                
+                //should be as straight forward as this
+            } else if (filtertype==12) {
+                //test applying more than one filter, alt 2 followed by 1
+                //alt 2 filter
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+                filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                
+                //alt 1 filter
+                
+                //problem: camerapixels are unsigned char, while iplimage->imagedata is just char *
+                
+                
+                //try one: does not work
+                //cameraPixelsNoAlpha=(unsigned char *)uploadImage->imageData;
+                
+                
+                //try two: might work but maybe not in both portrait and landscape...
+                //and maybe memory leak???
+                
+                //works on first photo both in landscape and portrait, but crashes after 2-3 photos
+                //crash in removal of alphachannelsection. 
+                //possibly fixed by using new variable instead of cameraPixelsNoAlpha,
+                //but there is a documented bug in getPixels in ofxCvImage.cpp
+                //WHEEL AND COME AGAIN: forgot to uncomment try one before testing try two. try again then lunch, then other things!
+                //ok, still crashing...
+                cameraPixelsNoAlpha=drawImage.getPixels();
+                filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
+                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                uploadImage=drawImage.getCvImage();
+
+                
+                
+                
             } else {
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();            
@@ -462,9 +495,9 @@ void testApp::draw() {
     //but seems like instamatic drawn in center instead. doesn't really matter. 
     // (320/3=106,7)
     
-    float scale=1; //0.35;
+    
     int cx=cassetteButton.x;
-    int cy=cassetteButton.y;
+    int cy=cassetteButton.y-3;
     
     float progress;
     if (chune.getIsPlaying()) {
@@ -496,19 +529,19 @@ void testApp::draw() {
     }
 
     ofSetColor(200,200,200);
-    drawCassette(cx,cy,scale,progress,wi);
-    
-    drawCassetteOld(cx,cy-100,0.35,progress,wi);
-    
-    
-    //draw instamatic icon
-    scale=0.7;
+    drawCassette(cx,cy,progress,wi);
 
-    instaicon.draw(cameraButton.x,cameraButton.y,instaicon.getWidth()*scale,instaicon.getHeight()*scale);
+    //draw instamatic icon
+    int ix=cameraButton.x;
+    int iy=cameraButton.y-3;
+
+    instaicon.draw(ix,iy);
 
     
     //draw rectangle (to be substituted with something useful
-    ofRect(ofGetWidth()/2-instaicon.getWidth()/2*scale+instaicon.getWidth()*scale,ofGetHeight()-instaicon.getHeight()*scale,ofGetWidth()-(ofGetWidth()/2-instaicon.getWidth()/2*scale+instaicon.getWidth()*scale+1)+1,instaicon.getHeight()*scale);
+    int sx=settingsButton.x;
+    int sy=settingsButton.y-3;
+    ofRect(sx,sy,settingsButton.width,settingsButton.height);
     
     //temporary progress indicator
     //if chune.stop() is called, chune.getPostion() returns 1 but if chune reaches end and stops, chune.getPosition() returns 0
@@ -1055,50 +1088,27 @@ void testApp::consoleplot(float x,float max,char c){
 }
 
 
-void testApp::drawCassette(int cx,int cy,float scale,float progress,int wi){
+void testApp::drawCassette(int cx,int cy,float progress,int wi){
 //delete scale soon
     ofPushStyle();
-    float cw=cassette.getWidth();
-    float ch=cassette.getHeight();
-    cassette.draw(cx,cy,cw,ch);
+    cassette.draw(cx,cy);
  
-    scale=0.35;
     //this is the window where the tape shall grow and shrink
     ofSetColor(139,69,19); //brown tape
     //this brown tape could be inte cassette png
-    ofRect(cx+113*scale,cy+68*scale,70*scale,38*scale);
+    
+    ofRect(cx+41,cy+24,24,14);
     ofSetColor(255,255,255);
-    
-    ofRect(cx+113*scale+5*scale+50*scale-50*progress*scale,cy+68*scale,10*scale,38*scale);
-    
-    wheel[wi].draw(cx+65*scale,cy+68*scale,wheel[wi].getWidth(),wheel[wi].getHeight());
-    wheel[wi].draw(cx+cassette.getWidth()-107*scale,cy+68*scale,wheel[wi].getWidth(),wheel[wi].getHeight());
+    ofRect(cx+41+2+16*(1-progress),cy+24,4,14);
+
+    wheel[wi].draw(cx+23,cy+24); 
+    wheel[wi].draw(cx+68,cy+24);
     
     ofPopStyle();
     
 }
 
 
-void testApp::drawCassetteOld(int cx,int cy,float scale,float progress,int wi){
-    ofPushStyle();
-    float cw=cassetteOld.getWidth()*scale;
-    float ch=cassetteOld.getHeight()*scale;
-    cassetteOld.draw(cx,cy,cw,ch);
-    
-    //this is the window where the tape shall grow and shrink
-    ofSetColor(139,69,19); //brown tape
-    //this brown tape could be inte cassette png
-    ofRect(cx+113*scale,cy+68*scale,70*scale,38*scale);
-    ofSetColor(255,255,255);
-
-    ofRect(cx+113*scale+5*scale+50*scale-50*progress*scale,cy+68*scale,10*scale,38*scale);
-    
-    wheelOld[wi].draw(cx+65*scale,cy+68*scale,wheelOld[wi].getWidth()*scale,wheelOld[wi].getHeight()*scale);
-    wheelOld[wi].draw(cx+cassetteOld.getWidth()*scale-107*scale,cy+68*scale,wheelOld[wi].getWidth()*scale,wheelOld[wi].getHeight()*scale);
-
-    ofPopStyle();
-
-}
 
 
 

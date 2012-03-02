@@ -7,11 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		039bcf34ed7e0190fdade828f56472a3 /* instructions.png in Sources */ = {isa = PBXBuildFile; fileRef = 1b3571ff319e8543357863c58d3b6387 /* instructions.png */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
-		5205AADB14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */; };
 		522AFA0714FD976B00CC19AF /* suelta-la-voz_reverse.caf in Resources */ = {isa = PBXBuildFile; fileRef = 522AFA0614FD976B00CC19AF /* suelta-la-voz_reverse.caf */; };
 		5252B1AB141A456F0077A748 /* install.xml in Resources */ = {isa = PBXBuildFile; fileRef = 5252B13F141A456F0077A748 /* install.xml */; };
 		5252B1AC141A456F0077A748 /* opencv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5252B195141A456F0077A748 /* opencv.a */; };
@@ -23,14 +21,7 @@
 		5252B1B2141A45700077A748 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A3141A456F0077A748 /* ofxCvHaarFinder.cpp */; };
 		5252B1B3141A45700077A748 /* ofxCvImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A5141A456F0077A748 /* ofxCvImage.cpp */; };
 		5252B1B4141A45700077A748 /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A8141A456F0077A748 /* ofxCvShortImage.cpp */; };
-		526B479414D1588000D0B4A6 /* cassette-md-emptywheel.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */; };
-		526B479514D1588000D0B4A6 /* cassette-md.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478D14D1588000D0B4A6 /* cassette-md.png */; };
-		526B479614D1588000D0B4A6 /* hjul0.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478E14D1588000D0B4A6 /* hjul0.png */; };
-		526B479714D1588000D0B4A6 /* hjul10.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B478F14D1588000D0B4A6 /* hjul10.png */; };
-		526B479814D1588000D0B4A6 /* hjul20.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B479014D1588000D0B4A6 /* hjul20.png */; };
-		526B479914D1588000D0B4A6 /* hjul30.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B479114D1588000D0B4A6 /* hjul30.png */; };
-		526B479A14D1588000D0B4A6 /* hjul40.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B479214D1588000D0B4A6 /* hjul40.png */; };
-		526B479B14D1588000D0B4A6 /* hjul50.png in Resources */ = {isa = PBXBuildFile; fileRef = 526B479314D1588000D0B4A6 /* hjul50.png */; };
+		52644E3B1500A25600B17B00 /* instamatic-noalpha-107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */; };
 		526CDA7714C97856000D7923 /* suelta-la-voz.caf in Resources */ = {isa = PBXBuildFile; fileRef = 526CDA7614C97856000D7923 /* suelta-la-voz.caf */; };
 		52C328B7141DF21100787075 /* install.xml in Resources */ = {isa = PBXBuildFile; fileRef = 52C328A8141DF21100787075 /* install.xml */; };
 		52C328B8141DF21100787075 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C328AD141DF21100787075 /* Color.cpp */; };
@@ -38,7 +29,6 @@
 		52C328C5141DF22300787075 /* changelog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 52C328BB141DF22300787075 /* changelog.txt */; };
 		52C328C6141DF22300787075 /* install.xml in Resources */ = {isa = PBXBuildFile; fileRef = 52C328BC141DF22300787075 /* install.xml */; };
 		52C328C7141DF22300787075 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 52C328BD141DF22300787075 /* LICENSE.txt */; };
-		52DE72B414D2089300920880 /* instamatic3.png in Resources */ = {isa = PBXBuildFile; fileRef = 52DE72B314D2089300920880 /* instamatic3.png */; };
 		52E9CA59141DF4A700CFFB5A /* senseMaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52E9CA57141DF4A700CFFB5A /* senseMaker.cpp */; };
 		52E9CA5C141DF57700CFFB5A /* filters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52E9CA5A141DF57700CFFB5A /* filters.cpp */; };
 		52FCEBE214FED63D007EF2F2 /* hjul10-14x14.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */; };
@@ -50,7 +40,6 @@
 		52FCEBE814FED63D007EF2F2 /* cassette-noalpha-107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 52FCEBE114FED63D007EF2F2 /* cassette-noalpha-107x69.png */; };
 		5326AEA810A23A0500278DE6 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5326AEA710A23A0500278DE6 /* CoreLocation.framework */; };
 		53F323EB10A20EDB00E0DAE4 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53F323EA10A20EDB00E0DAE4 /* OpenAL.framework */; };
-		78f10b3f368cef249f7add2bd3f90b52 /* instructions.png in Resources */ = {isa = PBXBuildFile; fileRef = 1b3571ff319e8543357863c58d3b6387 /* instructions.png */; };
 		BB16EBD20F2B2A9500518274 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD10F2B2A9500518274 /* OpenGLES.framework */; };
 		BB16EBD90F2B2AB500518274 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB16EBD80F2B2AB500518274 /* QuartzCore.framework */; };
 		BB24DD8F10DA77E000E9C588 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = BB24DD8C10DA77E000E9C588 /* Default.png */; };
@@ -86,10 +75,8 @@
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* suelta-la-voz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "suelta-la-voz.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		1b3571ff319e8543357863c58d3b6387 /* instructions.png */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = image.png; name = instructions.png; path = bin/data/images/instructions.png; sourceTree = SOURCE_ROOT; };
 		288765FC0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* iPhone_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhone_Prefix.pch; sourceTree = "<group>"; };
-		5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md-emptywheel-noalpha.png"; path = "images/cassette-md-emptywheel-noalpha.png"; sourceTree = "<group>"; };
 		522AFA0614FD976B00CC19AF /* suelta-la-voz_reverse.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "suelta-la-voz_reverse.caf"; sourceTree = "<group>"; };
 		5252B13F141A456F0077A748 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
 		5252B144141A456F0077A748 /* cv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cv.h; sourceTree = "<group>"; };
@@ -178,14 +165,7 @@
 		5252B1A8141A456F0077A748 /* ofxCvShortImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCvShortImage.cpp; sourceTree = "<group>"; };
 		5252B1A9141A456F0077A748 /* ofxCvShortImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCvShortImage.h; sourceTree = "<group>"; };
 		5252B1AA141A456F0077A748 /* ofxOpenCv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOpenCv.h; sourceTree = "<group>"; };
-		526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md-emptywheel.png"; path = "images/cassette-md-emptywheel.png"; sourceTree = "<group>"; };
-		526B478D14D1588000D0B4A6 /* cassette-md.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "cassette-md.png"; path = "images/cassette-md.png"; sourceTree = "<group>"; };
-		526B478E14D1588000D0B4A6 /* hjul0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul0.png; path = images/hjul0.png; sourceTree = "<group>"; };
-		526B478F14D1588000D0B4A6 /* hjul10.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul10.png; path = images/hjul10.png; sourceTree = "<group>"; };
-		526B479014D1588000D0B4A6 /* hjul20.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul20.png; path = images/hjul20.png; sourceTree = "<group>"; };
-		526B479114D1588000D0B4A6 /* hjul30.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul30.png; path = images/hjul30.png; sourceTree = "<group>"; };
-		526B479214D1588000D0B4A6 /* hjul40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul40.png; path = images/hjul40.png; sourceTree = "<group>"; };
-		526B479314D1588000D0B4A6 /* hjul50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = hjul50.png; path = images/hjul50.png; sourceTree = "<group>"; };
+		52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "instamatic-noalpha-107x69.png"; path = "images/instamatic-noalpha-107x69.png"; sourceTree = "<group>"; };
 		526CDA7614C97856000D7923 /* suelta-la-voz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "suelta-la-voz.caf"; sourceTree = "<group>"; };
 		52C328A8141DF21100787075 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
 		52C328AB141DF21100787075 /* ChanTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChanTraits.h; sourceTree = "<group>"; };
@@ -209,7 +189,6 @@
 		52C328C2141DF22300787075 /* MSAInterpolator2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAInterpolator2D.h; sourceTree = "<group>"; };
 		52C328C3141DF22300787075 /* MSAInterpolator3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAInterpolator3D.h; sourceTree = "<group>"; };
 		52C328C4141DF22300787075 /* MSAInterpolatorT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSAInterpolatorT.h; sourceTree = "<group>"; };
-		52DE72B314D2089300920880 /* instamatic3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = instamatic3.png; path = images/instamatic3.png; sourceTree = "<group>"; };
 		52E9CA57141DF4A700CFFB5A /* senseMaker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = senseMaker.cpp; sourceTree = "<group>"; };
 		52E9CA58141DF4A700CFFB5A /* senseMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = senseMaker.h; sourceTree = "<group>"; };
 		52E9CA5A141DF57700CFFB5A /* filters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = filters.cpp; sourceTree = "<group>"; };
@@ -645,6 +624,7 @@
 		93d9338a1a5aa1694c40f299d4c6e4ea /* images */ = {
 			isa = PBXGroup;
 			children = (
+				52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */,
 				52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */,
 				52FCEBDC14FED63D007EF2F2 /* hjul20-14x14.png */,
 				52FCEBDD14FED63D007EF2F2 /* hjul30-14x14.png */,
@@ -652,17 +632,6 @@
 				52FCEBDF14FED63D007EF2F2 /* hjul50-14x14.png */,
 				52FCEBE014FED63D007EF2F2 /* hjul00-14x14.png */,
 				52FCEBE114FED63D007EF2F2 /* cassette-noalpha-107x69.png */,
-				52DE72B314D2089300920880 /* instamatic3.png */,
-				5205AADA14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png */,
-				526B478C14D1588000D0B4A6 /* cassette-md-emptywheel.png */,
-				526B478D14D1588000D0B4A6 /* cassette-md.png */,
-				526B478E14D1588000D0B4A6 /* hjul0.png */,
-				526B478F14D1588000D0B4A6 /* hjul10.png */,
-				526B479014D1588000D0B4A6 /* hjul20.png */,
-				526B479114D1588000D0B4A6 /* hjul30.png */,
-				526B479214D1588000D0B4A6 /* hjul40.png */,
-				526B479314D1588000D0B4A6 /* hjul50.png */,
-				1b3571ff319e8543357863c58d3b6387 /* instructions.png */,
 			);
 			name = images;
 			sourceTree = "<group>";
@@ -809,23 +778,12 @@
 			files = (
 				BB24DD8F10DA77E000E9C588 /* Default.png in Resources */,
 				BB24DD9010DA77E000E9C588 /* Icon.png in Resources */,
-				78f10b3f368cef249f7add2bd3f90b52 /* instructions.png in Resources */,
 				5252B1AB141A456F0077A748 /* install.xml in Resources */,
 				52C328B7141DF21100787075 /* install.xml in Resources */,
 				52C328C5141DF22300787075 /* changelog.txt in Resources */,
 				52C328C6141DF22300787075 /* install.xml in Resources */,
 				52C328C7141DF22300787075 /* LICENSE.txt in Resources */,
 				526CDA7714C97856000D7923 /* suelta-la-voz.caf in Resources */,
-				526B479414D1588000D0B4A6 /* cassette-md-emptywheel.png in Resources */,
-				526B479514D1588000D0B4A6 /* cassette-md.png in Resources */,
-				526B479614D1588000D0B4A6 /* hjul0.png in Resources */,
-				526B479714D1588000D0B4A6 /* hjul10.png in Resources */,
-				526B479814D1588000D0B4A6 /* hjul20.png in Resources */,
-				526B479914D1588000D0B4A6 /* hjul30.png in Resources */,
-				526B479A14D1588000D0B4A6 /* hjul40.png in Resources */,
-				526B479B14D1588000D0B4A6 /* hjul50.png in Resources */,
-				5205AADB14D2067500FEEEB3 /* cassette-md-emptywheel-noalpha.png in Resources */,
-				52DE72B414D2089300920880 /* instamatic3.png in Resources */,
 				522AFA0714FD976B00CC19AF /* suelta-la-voz_reverse.caf in Resources */,
 				52FCEBE214FED63D007EF2F2 /* hjul10-14x14.png in Resources */,
 				52FCEBE314FED63D007EF2F2 /* hjul20-14x14.png in Resources */,
@@ -834,6 +792,7 @@
 				52FCEBE614FED63D007EF2F2 /* hjul50-14x14.png in Resources */,
 				52FCEBE714FED63D007EF2F2 /* hjul00-14x14.png in Resources */,
 				52FCEBE814FED63D007EF2F2 /* cassette-noalpha-107x69.png in Resources */,
+				52644E3B1500A25600B17B00 /* instamatic-noalpha-107x69.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -862,7 +821,6 @@
 			files = (
 				E4D8936E11527B74007E1F53 /* main.mm in Sources */,
 				E4D8936F11527B74007E1F53 /* testApp.mm in Sources */,
-				039bcf34ed7e0190fdade828f56472a3 /* instructions.png in Sources */,
 				5252B1AE141A45700077A748 /* ofxCvColorImage.cpp in Sources */,
 				5252B1AF141A45700077A748 /* ofxCvContourFinder.cpp in Sources */,
 				5252B1B0141A45700077A748 /* ofxCvFloatImage.cpp in Sources */,
