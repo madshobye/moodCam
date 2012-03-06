@@ -200,6 +200,14 @@ public:
 	float vectorabs(ofPoint p);
 	void consoleplot(float x,float max,char c);
     
+    
+    CFStringRef route;
+    UInt32 propertySize;
+    NSString* routeStr;
+
+    
+    
+    
 	void drawDebug();
 	
     void drawCassette(int cx,int cy,float progress,int wi);
@@ -207,7 +215,14 @@ public:
 
     
 	//variables
+    bool speaker;
+    
+    bool headphonesConnected;
+    bool dockConnected;
+    
     unsigned char * cameraPixelsNoAlpha;
+    unsigned char * pixelsTemp;
+    
 	ofxiPhoneImagePicker * camera;
 	ofxCvColorImage  drawImage; //this is the image that is drawn in the draw-function
 
@@ -313,6 +328,7 @@ public:
     ofPoint touchUpPoint;
     
     ofImage instaicon;
+    ofImage settingsicon;
     
     //cassette animation
     int wi;

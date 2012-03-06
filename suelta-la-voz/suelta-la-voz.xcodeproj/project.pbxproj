@@ -23,6 +23,8 @@
 		5252B1B4141A45700077A748 /* ofxCvShortImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5252B1A8141A456F0077A748 /* ofxCvShortImage.cpp */; };
 		52644E3B1500A25600B17B00 /* instamatic-noalpha-107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */; };
 		526CDA7714C97856000D7923 /* suelta-la-voz.caf in Resources */ = {isa = PBXBuildFile; fileRef = 526CDA7614C97856000D7923 /* suelta-la-voz.caf */; };
+		527FEA77150144AB000A2C9A /* cogwheel_orange107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 527FEA76150144AB000A2C9A /* cogwheel_orange107x69.png */; };
+		527FEA79150151B8000A2C9A /* chaplin107x69.png in Resources */ = {isa = PBXBuildFile; fileRef = 527FEA78150151B8000A2C9A /* chaplin107x69.png */; };
 		52C328B7141DF21100787075 /* install.xml in Resources */ = {isa = PBXBuildFile; fileRef = 52C328A8141DF21100787075 /* install.xml */; };
 		52C328B8141DF21100787075 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C328AD141DF21100787075 /* Color.cpp */; };
 		52C328B9141DF21100787075 /* MSACoreGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 52C328B4141DF21100787075 /* MSACoreGL.cpp */; };
@@ -167,6 +169,8 @@
 		5252B1AA141A456F0077A748 /* ofxOpenCv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxOpenCv.h; sourceTree = "<group>"; };
 		52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "instamatic-noalpha-107x69.png"; path = "images/instamatic-noalpha-107x69.png"; sourceTree = "<group>"; };
 		526CDA7614C97856000D7923 /* suelta-la-voz.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "suelta-la-voz.caf"; sourceTree = "<group>"; };
+		527FEA76150144AB000A2C9A /* cogwheel_orange107x69.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cogwheel_orange107x69.png; path = images/cogwheel_orange107x69.png; sourceTree = "<group>"; };
+		527FEA78150151B8000A2C9A /* chaplin107x69.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = chaplin107x69.png; path = images/chaplin107x69.png; sourceTree = "<group>"; };
 		52C328A8141DF21100787075 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
 		52C328AB141DF21100787075 /* ChanTraits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChanTraits.h; sourceTree = "<group>"; };
 		52C328AC141DF21100787075 /* CinderMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderMath.h; sourceTree = "<group>"; };
@@ -624,6 +628,8 @@
 		93d9338a1a5aa1694c40f299d4c6e4ea /* images */ = {
 			isa = PBXGroup;
 			children = (
+				527FEA78150151B8000A2C9A /* chaplin107x69.png */,
+				527FEA76150144AB000A2C9A /* cogwheel_orange107x69.png */,
 				52644E3A1500A25600B17B00 /* instamatic-noalpha-107x69.png */,
 				52FCEBDB14FED63D007EF2F2 /* hjul10-14x14.png */,
 				52FCEBDC14FED63D007EF2F2 /* hjul20-14x14.png */,
@@ -793,6 +799,8 @@
 				52FCEBE714FED63D007EF2F2 /* hjul00-14x14.png in Resources */,
 				52FCEBE814FED63D007EF2F2 /* cassette-noalpha-107x69.png in Resources */,
 				52644E3B1500A25600B17B00 /* instamatic-noalpha-107x69.png in Resources */,
+				527FEA77150144AB000A2C9A /* cogwheel_orange107x69.png in Resources */,
+				527FEA79150151B8000A2C9A /* chaplin107x69.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,10 +1,98 @@
+/* some snippets to try to detect headphone connection
+ CFStringRef route;
+ UInt32 propertySize = sizeof(CFStringRef);
+ AudioSessionInitialize(NULL, NULL, NULL, NULL);
+ AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+ 
+ if((route == NULL) || (CFStringGetLength(route) == 0)){
+ // Silent Mode
+ NSLog(@"AudioRoute: SILENT");
+ } else {
+ NSString* routeStr = (NSString*)route;
+ NSLog(@"AudioRoute: %@", routeStr);
+ 
+//  Known values of route:
+// * "Headset"
+// * "Headphone"
+// * "Speaker"
+// * "SpeakerAndMicrophone"
+// * "HeadphonesAndMicrophone"
+// * "HeadsetInOut"
+// * "ReceiverAndMicrophone"
+// * "Lineout"
+ 
+
+NSRange headphoneRange = [routeStr rangeOfString : @"Headphone"];
+NSRange headsetRange = [routeStr rangeOfString : @"Headset"];
+NSRange receiverRange = [routeStr rangeOfString : @"Receiver"];
+NSRange speakerRange = [routeStr rangeOfString : @"Speaker"];
+NSRange lineoutRange = [routeStr rangeOfString : @"Lineout"];
+
+if (headphoneRange.location != NSNotFound) {
+    // Don't change the route if the headphone is plugged in.
+} else if(headsetRange.location != NSNotFound) {
+    // Don't change the route if the headset is plugged in.
+} else if (receiverRange.location != NSNotFound) {
+    // Change to play on the speaker
+    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+} else if (speakerRange.location != NSNotFound) {
+    // Don't change the route if the speaker is currently playing.
+} else if (lineoutRange.location != NSNotFound) {
+    // Don't change the route if the lineout is plugged in.
+} else {
+    NSLog(@"Unknown audio route.");
+}
+}
+*/
+
+//eller kanske detta:
+
+
+/*
+(BOOL)isHeadsetPluggedIn {
+    UInt32 routeSize = sizeof (CFStringRef);
+    CFStringRef route;
+    
+    OSStatus error = AudioSessionGetProperty (kAudioSessionProperty_AudioRoute,
+                                              &routeSize,
+                                              &route);
+    
+//     * Known values of route:
+//     * "Headset"
+//     * "Headphone"
+//     * "Speaker"
+//     * "SpeakerAndMicrophone"
+//     * "HeadphonesAndMicrophone"
+//     * "HeadsetInOut"
+//     * "ReceiverAndMicrophone"
+//     * "Lineout"
+//     *
+    
+    if (!error && (route != NULL)) {
+        
+        NSString* routeStr = (NSString*)route;
+        
+        NSRange headphoneRange = [routeStr rangeOfString : @"Head"];
+        
+        if (headphoneRange.location != NSNotFound) return YES;
+        
+    }
+    
+    return NO;
+}
+
+*/
+
+
+
 #import <UIKit/UIKit.h>
 #include "testApp.h"
 
 int threadedUpload::count=0;
 
-char * tickstring = new char[100];
-int tick(int last, char * s) {
+const char * tickstring = new char[100];
+int tick(int last, const char * s) {
     int now=ofGetElapsedTimeMillis();
     if (now>(last+1000)) {
         cout << s << endl;
@@ -16,6 +104,23 @@ int tick(int last, char * s) {
 
 //--------------------------------------------------------------
 void testApp::setup(){	
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    speaker=false;
+    headphonesConnected=false; //check later;
+    dockConnected=false; //check later
+    
+    
     ofBackground(0,0,0);
     filtercountdown=0;
 
@@ -42,8 +147,29 @@ void testApp::setup(){
    
     
     instaicon.loadImage("images/instamatic-noalpha-107x69.png");
+    settingsicon.loadImage("images/chaplin107x69.png");
+
     
-        
+    
+    
+    propertySize = sizeof(CFStringRef);
+    
+    AudioSessionInitialize(NULL, NULL, NULL, NULL);
+    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+    
+    if((route == NULL) || (CFStringGetLength(route) == 0)){
+        // Silent Mode
+        routeStr=@"silent";
+    } else {
+        routeStr = (NSString*)route;
+    }
+    
+    tickstring = [routeStr UTF8String];
+    cout << "AudioSessionGetProperty före ljud setup " << tickstring << endl;
+
+    
+    
+    
     
     //this might be useful to keep music playing in locked mode
     //void interruptionListenerCallback(void *inClientData, UInt32 inInterruptionState) {  
@@ -71,6 +197,18 @@ void testApp::setup(){
      
 
     AudioSessionSetActive(YES);
+
+    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+    
+    if((route == NULL) || (CFStringGetLength(route) == 0)){
+        // Silent Mode
+        routeStr=@"silent";
+    } else {
+        routeStr = (NSString*)route;
+    }
+    
+    tickstring = [routeStr UTF8String];
+    cout << "AudioSessionGetProperty efter ljud setup " << tickstring << endl;
 
     
     
@@ -201,11 +339,10 @@ void testApp::update()
             
             
             if (cameraPixelsNoAlpha == NULL){
-                // first time, let's get memory based on how big the image is: 
-                //cameraPixelsFlip = new unsigned char [camera->width * camera->height*4];
-                //cameraPixelsRot = new unsigned char [camera->width * camera->height*4];
-                //cameraPixels = new unsigned char [camera->width * camera->height*4];
                 cameraPixelsNoAlpha = new unsigned char [camera->width * camera->height*3];
+            }
+            if (pixelsTemp == NULL){
+                pixelsTemp = new unsigned char [camera->width * camera->height*3];
             }
                     
                        
@@ -248,8 +385,26 @@ void testApp::update()
             //Note that the filter-function will alter uploadImage, and that this will also alter drawImage as intended in the second
             //alternative. 
             //
-            //Note also that there is a third alternative:
+            //Note also that there are more alternatives:
             //applying more than one filter, possibly a combination of 1 and 2.
+            //This could be done like this:
+//            alt 1 filter followed by alt 2 filter:
+//            filterGlitch(cameraPixelsNoAlpha,camera->width,camera->height,senses);            
+//            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+//            uploadImage=drawImage.getCvImage();
+//            filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
+//
+//            alt 2 filter followed by alt 1 filter:
+//            drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+//            uploadImage=drawImage.getCvImage();
+//            filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
+//            pixelsTemp=drawImage.getPixels();
+//            filterGlitch(pixelsTemp,camera->width,camera->height,senses);            
+//            drawImage.setFromPixels(pixelsTemp,camera->width,camera->height);
+//            uploadImage=drawImage.getCvImage();
+            
+            
+            
             //
             //some old notes on this:
             /*            uploadImage=cvCreateImage(cvSize(width,height), IPL_DEPTH_8U, 3);
@@ -315,12 +470,13 @@ void testApp::update()
             } else if (filtertype==11) {
                 //test, applying more than one filter, alt 1 followed by 2
                 //alt 1 filter
-                filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
+                filterGlitch(cameraPixelsNoAlpha,camera->width,camera->height,senses);            
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
 
                 //alt 2 filter
-                filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
+
                 
                 //should be as straight forward as this
             } else if (filtertype==12) {
@@ -328,32 +484,21 @@ void testApp::update()
                 //alt 2 filter
                 drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
-                filterCurves_2(uploadImage, drawImage.getWidth(), drawImage.getHeight(),senses); //amount should be affected by senses
+                filterSmooth(uploadImage, drawImage.getWidth(), drawImage.getHeight(),20);
                 
                 //alt 1 filter
-                
-                //problem: camerapixels are unsigned char, while iplimage->imagedata is just char *
-                
-                
-                //try one: does not work
-                //cameraPixelsNoAlpha=(unsigned char *)uploadImage->imageData;
-                
-                
-                //try two: might work but maybe not in both portrait and landscape...
-                //and maybe memory leak???
-                
-                //works on first photo both in landscape and portrait, but crashes after 2-3 photos
-                //crash in removal of alphachannelsection. 
-                //possibly fixed by using new variable instead of cameraPixelsNoAlpha,
-                //but there is a documented bug in getPixels in ofxCvImage.cpp
-                //WHEEL AND COME AGAIN: forgot to uncomment try one before testing try two. try again then lunch, then other things!
-                //ok, still crashing...
-                cameraPixelsNoAlpha=drawImage.getPixels();
-                filterFrameit(cameraPixelsNoAlpha,camera->width,camera->height,-1);            
-                drawImage.setFromPixels(cameraPixelsNoAlpha,camera->width,camera->height);
+                int temptime=dis(0,"");
+                pixelsTemp=drawImage.getPixels(); //takes 4ms
+                dis(temptime,"pixelsTemp=drawImage.getPixels()");
+                filterGlitch(pixelsTemp,camera->width,camera->height,senses);            
+                drawImage.setFromPixels(pixelsTemp,camera->width,camera->height);
                 uploadImage=drawImage.getCvImage();
 
-                
+                //now it actually seems to work... don't really lika all conversion steps involved
+                //but let's do like this for now
+                //
+                //NOTE crashes sometimes. Don't know exactly why but I guess it has to do 
+                //with filtertype 12...but I can't reproduce it and really don't know what is happening
                 
                 
             } else {
@@ -436,8 +581,21 @@ void testApp::update()
 	
 
     
+    
+    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+    
+    if((route == NULL) || (CFStringGetLength(route) == 0)){
+        // Silent Mode
+        routeStr=@"silent";
+    } else {
+        routeStr = (NSString*)route;
+    }
+    
+    tickstring = [routeStr UTF8String];
+
     lasttick=tick(lasttick,tickstring);
 	
+    
 }
 
 void testApp::draw() {
@@ -474,7 +632,7 @@ void testApp::draw() {
             drawImage.draw(0, 0,drawWidth,drawHeight);            
         }
     
-        sprintf(tickstring,"drawHeight: %4.1f, drawWidth: %4.1f, ofGetwidth: %i, ofGetHeight: %i, imagewidth: %d, imageheight: %d",drawHeight,drawWidth,ofGetWidth(),ofGetHeight(),drawImage.width,drawImage.height); 
+        //sprintf(tickstring,"drawHeight: %4.1f, drawWidth: %4.1f, ofGetwidth: %i, ofGetHeight: %i, imagewidth: %d, imageheight: %d",drawHeight,drawWidth,ofGetWidth(),ofGetHeight(),drawImage.width,drawImage.height); 
 
 
     }
@@ -534,25 +692,17 @@ void testApp::draw() {
     //draw instamatic icon
     int ix=cameraButton.x;
     int iy=cameraButton.y-3;
-
+    
     instaicon.draw(ix,iy);
-
+    
+     
     
     //draw rectangle (to be substituted with something useful
     int sx=settingsButton.x;
     int sy=settingsButton.y-3;
-    ofRect(sx,sy,settingsButton.width,settingsButton.height);
     
-    //temporary progress indicator
-    //if chune.stop() is called, chune.getPostion() returns 1 but if chune reaches end and stops, chune.getPosition() returns 0
-    ofPushStyle();
-    char* s = new char[30];
-    sprintf(s, "%.3f %.2f", chune.getPosition(),chuneposition); 
-    ofSetColor(0,0,255);
-	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-30);
-    sprintf(s, "%.3f", 1-chuneReverse.getPosition()); 
-	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-15);    
-    ofPopStyle();
+    settingsicon.draw(sx,sy);
+    
 
     
     
@@ -636,6 +786,16 @@ void testApp::drawDebug()
 	ofSetColor(0,0,0);
 	ofDrawBitmapString(s,ofGetWidth()- 30+2, filtertype * 20+12);
 	ofSetColor(255,255,255);
+    
+    ofPushStyle();
+    s = new char[30];
+    sprintf(s, "%.3f %.2f", chune.getPosition(),chuneposition); 
+    ofSetColor(0,0,255);
+	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-180);
+    sprintf(s, "%.3f", 1-chuneReverse.getPosition()); 
+	ofDrawBitmapString(s, ofGetWidth()-85,ofGetHeight()-170);    
+    ofPopStyle();
+
 	
 }
 
@@ -938,6 +1098,30 @@ void testApp::touchUp(ofTouchEventArgs &touch){
 
 	if(touch.id == 1)
 	{
+        //this directs sound to speaker even if headphones or dock connected
+        speaker=!speaker;
+        if (speaker) {
+                UInt32 audioRouteOverride = 'spkr';   
+                AudioSessionSetProperty (         
+                                         'ovrd',  
+                                         sizeof (audioRouteOverride),  
+                                         &audioRouteOverride           
+                                         );  
+
+        } else {
+            //this direct sound to receiver (earpiece) if nothing is connected and headphone/dock if connected.
+            //so, everything is ok if headphone or dock connected, but if nothing is connected, then sound must be (re)directe to speaker
+            UInt32 audioRouteOverride = 0;   
+            AudioSessionSetProperty (         
+                                     'ovrd',  
+                                     sizeof (audioRouteOverride),  
+                                     &audioRouteOverride           
+                                     );  
+            
+        }
+        
+        
+        
 		showDebug = !showDebug;	
 	}
 	if(showDebug && touch.x > ofGetWidth()-80 && touch.x < ofGetWidth())
