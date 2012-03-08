@@ -193,7 +193,11 @@ void testApp::setup(){
 //                             'ovrd',  
 //                             sizeof (audioRouteOverride),  
 //                             &audioRouteOverride           
-//                             );  
+//                             ); 
+    //maybe better way of doing it:
+    //    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+    //AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+//exactly the sam thing but property instead of string. more elegant
      
 
     AudioSessionSetActive(YES);
@@ -1101,23 +1105,13 @@ void testApp::touchUp(ofTouchEventArgs &touch){
         //this directs sound to speaker even if headphones or dock connected
         speaker=!speaker;
         if (speaker) {
-                UInt32 audioRouteOverride = 'spkr';   
-                AudioSessionSetProperty (         
-                                         'ovrd',  
-                                         sizeof (audioRouteOverride),  
-                                         &audioRouteOverride           
-                                         );  
-
+            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+            AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
         } else {
             //this direct sound to receiver (earpiece) if nothing is connected and headphone/dock if connected.
             //so, everything is ok if headphone or dock connected, but if nothing is connected, then sound must be (re)directe to speaker
-            UInt32 audioRouteOverride = 0;   
-            AudioSessionSetProperty (         
-                                     'ovrd',  
-                                     sizeof (audioRouteOverride),  
-                                     &audioRouteOverride           
-                                     );  
-            
+            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;
+            AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);            
         }
         
         
