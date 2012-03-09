@@ -1,3 +1,4 @@
+
 #pragma once
 #include "ofxOpenCv.h"
 #include "ofMain.h"
@@ -216,9 +217,17 @@ public:
     
 	//variables
     bool speaker;
-    
+    bool receiver;
+    bool receiverOld;
     bool headphonesConnected;
     bool dockConnected;
+    bool headphonesConnectedOld;
+    bool dockConnectedOld;
+    
+    
+    const char * audioroute;
+
+    
     
     unsigned char * cameraPixelsNoAlpha;
     unsigned char * pixelsTemp;

@@ -1,91 +1,3 @@
-/* some snippets to try to detect headphone connection
- CFStringRef route;
- UInt32 propertySize = sizeof(CFStringRef);
- AudioSessionInitialize(NULL, NULL, NULL, NULL);
- AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
- 
- if((route == NULL) || (CFStringGetLength(route) == 0)){
- // Silent Mode
- NSLog(@"AudioRoute: SILENT");
- } else {
- NSString* routeStr = (NSString*)route;
- NSLog(@"AudioRoute: %@", routeStr);
- 
-//  Known values of route:
-// * "Headset"
-// * "Headphone"
-// * "Speaker"
-// * "SpeakerAndMicrophone"
-// * "HeadphonesAndMicrophone"
-// * "HeadsetInOut"
-// * "ReceiverAndMicrophone"
-// * "Lineout"
- 
-
-NSRange headphoneRange = [routeStr rangeOfString : @"Headphone"];
-NSRange headsetRange = [routeStr rangeOfString : @"Headset"];
-NSRange receiverRange = [routeStr rangeOfString : @"Receiver"];
-NSRange speakerRange = [routeStr rangeOfString : @"Speaker"];
-NSRange lineoutRange = [routeStr rangeOfString : @"Lineout"];
-
-if (headphoneRange.location != NSNotFound) {
-    // Don't change the route if the headphone is plugged in.
-} else if(headsetRange.location != NSNotFound) {
-    // Don't change the route if the headset is plugged in.
-} else if (receiverRange.location != NSNotFound) {
-    // Change to play on the speaker
-    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-    AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
-} else if (speakerRange.location != NSNotFound) {
-    // Don't change the route if the speaker is currently playing.
-} else if (lineoutRange.location != NSNotFound) {
-    // Don't change the route if the lineout is plugged in.
-} else {
-    NSLog(@"Unknown audio route.");
-}
-}
-*/
-
-//eller kanske detta:
-
-
-/*
-(BOOL)isHeadsetPluggedIn {
-    UInt32 routeSize = sizeof (CFStringRef);
-    CFStringRef route;
-    
-    OSStatus error = AudioSessionGetProperty (kAudioSessionProperty_AudioRoute,
-                                              &routeSize,
-                                              &route);
-    
-//     * Known values of route:
-//     * "Headset"
-//     * "Headphone"
-//     * "Speaker"
-//     * "SpeakerAndMicrophone"
-//     * "HeadphonesAndMicrophone"
-//     * "HeadsetInOut"
-//     * "ReceiverAndMicrophone"
-//     * "Lineout"
-//     *
-    
-    if (!error && (route != NULL)) {
-        
-        NSString* routeStr = (NSString*)route;
-        
-        NSRange headphoneRange = [routeStr rangeOfString : @"Head"];
-        
-        if (headphoneRange.location != NSNotFound) return YES;
-        
-    }
-    
-    return NO;
-}
-
-*/
-
-
-
 #import <UIKit/UIKit.h>
 #include "testApp.h"
 
@@ -105,20 +17,6 @@ int tick(int last, const char * s) {
 //--------------------------------------------------------------
 void testApp::setup(){	
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    speaker=false;
-    headphonesConnected=false; //check later;
-    dockConnected=false; //check later
     
     
     ofBackground(0,0,0);
@@ -154,67 +52,42 @@ void testApp::setup(){
     
     propertySize = sizeof(CFStringRef);
     
-    AudioSessionInitialize(NULL, NULL, NULL, NULL);
-    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
-    
-    if((route == NULL) || (CFStringGetLength(route) == 0)){
-        // Silent Mode
-        routeStr=@"silent";
-    } else {
-        routeStr = (NSString*)route;
-    }
-    
-    tickstring = [routeStr UTF8String];
-    cout << "AudioSessionGetProperty före ljud setup " << tickstring << endl;
-
-    
-    
-    
-    
-    //this might be useful to keep music playing in locked mode
-    //void interruptionListenerCallback(void *inClientData, UInt32 inInterruptionState) {  
-    //    NSLog(@"interruptionListenerCallback");  
-    //}
-    //this is to keep music playing in locked mode
-    //and woyoyoy! it works!
     OSStatus result = AudioSessionInitialize(NULL, NULL, NULL, NULL);
-    //OSStatus result = AudioSessionInitialize(NULL, NULL, interruptionListenerCallback, ofxiPhoneGetAppDelegate());  
-    //both OSStatus result... seem to work equally well. The second
-    //needs interruptionListenerCallback above uncommented
-    UInt32 category = kAudioSessionCategory_PlayAndRecord; //used to be kAudioSessionCategory_MediaPlayback; but the output disables input
-    //and it works great with headphones, but without headphones, the earpiece instead of speaker is used for output.
-    //does it work with headphones without mic? yes
-    result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);  
-
-    
-    //following code makes speaker sound out, even if headphones are connected which is not what I want
-//    UInt32 audioRouteOverride = 'spkr';   
-//    AudioSessionSetProperty (         
-//                             'ovrd',  
-//                             sizeof (audioRouteOverride),  
-//                             &audioRouteOverride           
-//                             ); 
-    //maybe better way of doing it:
-    //    UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-    //AudioSessionSetProperty (kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
-//exactly the sam thing but property instead of string. more elegant
-     
-
+    UInt32 category = kAudioSessionCategory_PlayAndRecord; 
+    result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);       
     AudioSessionSetActive(YES);
+    speaker=false;
+    headphonesConnected=false;
+    dockConnected=false;
+    receiver=false;
+    receiverOld=false;
+    audioroute = new char[50];
 
-    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
-    
-    if((route == NULL) || (CFStringGetLength(route) == 0)){
-        // Silent Mode
-        routeStr=@"silent";
-    } else {
-        routeStr = (NSString*)route;
-    }
-    
-    tickstring = [routeStr UTF8String];
-    cout << "AudioSessionGetProperty efter ljud setup " << tickstring << endl;
-
-    
+//    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+//    if((route == NULL) || (CFStringGetLength(route) == 0)){
+//        // Silent Mode
+//        routeStr=@"silent";
+//    } else {
+//        routeStr = (NSString*)route;
+//    }
+//     
+//    audioroute=[routeStr UTF8String];
+//    //har inte testat både lineout och hörlurar. vad blir det då?
+//    if (strcmp(audioroute,"LineOut")==0) {
+//        dockConnected=true;
+//    } else if (strcmp(audioroute,"HeadsetInOut")==0) {
+//        headphonesConnected=true;
+//    } else if (strcmp(audioroute,"HeadphonesAndMicrophone")==0) {
+//        headphonesConnected=true;
+//    } else if (strcmp(audioroute,"ReceiverAndMicrophone")==0) {
+//        receiver=true;
+//    }
+//    if (receiver) {
+//        //redirect sound from receiver to speaker
+//        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+//        AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+//        receiver=false;
+//    }
     
     chune.loadSound("sounds/suelta-la-voz.caf");
 	chune.setVolume(1.0f);
@@ -310,6 +183,61 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update()
 {
+    
+    //check headphones or lineout
+    //check if headphones or lineout connected
+    //    HeadsetInOut
+    //    ReceiverAndMicrophone
+    //    SpeakerAndMicrophone
+    //    LineOut
+    //    HeadphonesAndMicrophone
+    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
+    if((route == NULL) || (CFStringGetLength(route) == 0)){
+        // Silent Mode
+        routeStr=@"silent";
+    } else {
+        routeStr = (NSString*)route;
+    }
+    
+    audioroute=[routeStr UTF8String];
+    //har inte testat både lineout och hörlurar. vad blir det då?
+    if (strcmp(audioroute,"LineOut")==0) {
+        dockConnected=true;
+    } else if (strcmp(audioroute,"HeadsetInOut")==0) {
+        headphonesConnected=true;
+    } else if (strcmp(audioroute,"HeadphonesAndMicrophone")==0) {
+        headphonesConnected=true;
+    } else if (strcmp(audioroute,"ReceiverAndMicrophone")==0) {
+        receiver=true;
+    }
+    if (receiver) {
+        //redirect sound from receiver to speaker
+        UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
+        AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
+        receiver=false;
+        cout << "redirecting to speaker" << endl;
+    }
+    
+    if ((!dockConnected && dockConnectedOld) || (!headphonesConnected && headphonesConnectedOld)) {
+        //stop chune
+        if (chune.getIsPlaying()) {
+            chuneposition=chune.getPosition();
+            cout << "chune was stopped by removed headphones/lineout" << endl;
+            chune.stop();
+            chunepaused=true;
+        } else if (chuneReverse.getIsPlaying()) {
+            cout << "chuneReverse was stopped by removed headphones/lineout" << endl;
+            chuneposition=1.0-chuneReverse.getPosition();
+            chuneReverse.stop();
+            chuneReversepaused=true;
+        }
+        
+        
+    }
+    dockConnectedOld=dockConnected;
+    headphonesConnectedOld=headphonesConnected;
+
+    
     if(camera->imageUpdated){
         if (filtercountdown>0) {
             //this is to prevent the preview screen from sticking until filtered image is drawn
@@ -1102,17 +1030,6 @@ void testApp::touchUp(ofTouchEventArgs &touch){
 
 	if(touch.id == 1)
 	{
-        //this directs sound to speaker even if headphones or dock connected
-        speaker=!speaker;
-        if (speaker) {
-            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_Speaker;
-            AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);
-        } else {
-            //this direct sound to receiver (earpiece) if nothing is connected and headphone/dock if connected.
-            //so, everything is ok if headphone or dock connected, but if nothing is connected, then sound must be (re)directe to speaker
-            UInt32 audioRouteOverride = kAudioSessionOverrideAudioRoute_None;
-            AudioSessionSetProperty(kAudioSessionProperty_OverrideAudioRoute,sizeof (audioRouteOverride),&audioRouteOverride);            
-        }
         
         
         
