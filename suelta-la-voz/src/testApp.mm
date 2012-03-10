@@ -24,6 +24,9 @@ void testApp::setup(){
 
     lasttick=0;
     
+    dockConnectedOld=false;
+    headphonesConnectedOld=false;
+    
     //size and position of icons and buttons
     cassetteButton.set(1*107,ofGetHeight()-67,107,67);
     cameraButton.set(0*107,ofGetHeight()-67,107,67);
@@ -56,11 +59,6 @@ void testApp::setup(){
     UInt32 category = kAudioSessionCategory_PlayAndRecord; 
     result = AudioSessionSetProperty(kAudioSessionProperty_AudioCategory, sizeof(category), &category);       
     AudioSessionSetActive(YES);
-    speaker=false;
-    headphonesConnected=false;
-    dockConnected=false;
-    receiver=false;
-    receiverOld=false;
     audioroute = new char[50];
 
 //    AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
@@ -191,6 +189,11 @@ void testApp::update()
     //    SpeakerAndMicrophone
     //    LineOut
     //    HeadphonesAndMicrophone
+    speaker=false;
+    headphonesConnected=false;
+    dockConnected=false;
+    receiver=false;
+
     AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &route);
     if((route == NULL) || (CFStringGetLength(route) == 0)){
         // Silent Mode
